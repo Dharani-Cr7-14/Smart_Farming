@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌱 Uzhavan Saathee - Seed Dashboard</title>
+  <style>
+    body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #0b0c10, #1f2833); color: #fff; margin:0; padding:0; }
+    header { background:#45a29e; color:#fff; text-align:center; padding:20px; font-size:24px; font-weight:bold; box-shadow:0 2px 15px rgba(0,0,0,0.5); }
+    nav a { color:white; text-decoration:none; margin:0 15px; font-weight:bold; transition:0.3s; }
+    nav a:hover { color:#66fcf1; }
+    .language-select { margin-top:10px; }
+    .container { padding:20px; max-width:1400px; margin:auto; }
+    form { background:#1f2833; padding:20px; border-radius:15px; box-shadow:0 4px 15px rgba(0,0,0,0.5); margin-bottom:30px; }
+    form label { display:block; margin-top:10px; font-weight:bold; }
+    form input, form select { width:100%; padding:10px; margin-top:5px; border-radius:8px; border:none; background:#0b0c10; color:#fff; }
+    form button { margin-top:15px; padding:12px 20px; background:#45a29e; color:#fff; border:none; border-radius:10px; cursor:pointer; font-size:16px; transition:0.3s; }
+    form button:hover { background:#66fcf1; color:#0b0c10; }
+    .prediction-card { background:#1f2833; padding:15px; border-radius:15px; margin-bottom:20px; box-shadow:0 4px 15px rgba(0,0,0,0.5); }
+    .prediction-card ul { list-style:none; padding:0; }
+    .prediction-card li { margin:5px 0; }
+    .dashboard { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:20px; justify-items:center; align-items:start; }
+    .card { background:#0b0c10; border-radius:15px; box-shadow:0 4px 20px rgba(102,252,241,0.3); padding:10px; text-align:center; cursor:pointer; transition:transform 0.3s, box-shadow 0.3s; width:300px; }
+    .card:hover { transform:scale(1.05); box-shadow:0 6px 25px rgba(102,252,241,0.6); }
+    .card h3 { color:#66fcf1; font-size:16px; margin-bottom:10px; }
+    iframe { width:100%; height:300px; border:none; border-radius:10px; background:#0b0c10; pointer-events:none; }
+    @media(max-width:700px){ iframe { height:240px; } }
+  </style>
+</head>
+<body>
+<header>
+  <span id="header-title">🌱 Uzhavan Saathee - Seed Dashboard</span>
+  <nav>
+    <a href="/" id="home-link">Home</a>
+    <a href="/seed_dashboard" id="seed-link">Seed Dashboard</a>
+    <a href="/disease_dashboard" id="disease-link">Disease Dashboard</a>
+  </nav>
+  <div class="language-select">
+    <label for="lang">Select Language: </label>
+    <select id="lang" onchange="changeLanguage()">
+      <option value="en">English</option>
+      <option value="ta">தமிழ்</option>
+      <option value="hi">हिन्दी</option>
+    </select>
+  </div>
+</header>
+
+<div class="container">
+  <!-- Farmer Input Form -->
+  <form method="post" action="/seed_dashboard">
+    <h2 id="form-title">🧑‍🌾 Enter Farm Details</h2>
+    <label for="pH" id="label-pH">Soil pH</label>
+    <input type="number" step="0.01" id="pH" name="pH" required>
+    <label for="N" id="label-N">Nitrogen (N)</label>
+    <input type="number" step="0.01" id="N" name="N" required>
+    <label for="P" id="label-P">Phosphorus (P)</label>
+    <input type="number" step="0.01" id="P" name="P" required>
+    <label for="K" id="label-K">Potassium (K)</label>
+    <input type="number" step="0.01" id="K" name="K" required>
+    <label for="Temp" id="label-Temp">Temperature (°C)</label>
+    <input type="number" step="0.1" id="Temp" name="Temp" required>
+    <label for="Rainfall" id="label-Rainfall">Rainfall (mm)</label>
+    <input type="number" step="0.1" id="Rainfall" name="Rainfall" required>
+    <label for="Humidity" id="label-Humidity">Humidity (%)</label>
+    <input type="number" step="0.1" id="Humidity" name="Humidity" required>
+    <label for="Season_Duration" id="label-Season">Season Duration (days)</label>
+    <input type="number" step="1" id="Season_Duration" name="Season_Duration" required>
+    <label for="Soil_Type" id="label-Soil">Soil Type</label>
+    <select id="Soil_Type" name="Soil_Type" required></select>
+    <label for="Region" id="label-Region">Region</label>
+    <select id="Region" name="Region" required></select>
+    <button type="submit" id="submit-btn">🔍 Get Seed Recommendation</button>
+  </form>
+
+  <!-- Prediction Result -->
+  {% if prediction %}
+  <div class="prediction-card">
+    <h2 id="pred-title" data-crop="{{ prediction.pred_crop }}">🌱 {{ prediction.pred_crop }}</h2>
+    <h3 id="top-seeds-title">Top Recommended Seeds</h3>
+    <ul>
+      {% for seed, prob in prediction.top_seeds %}
+      <li>{{ seed }} ({{ '{:.2f}'.format(prob*100) }}%)</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <!-- Dashboard Visualizations -->
+  <h2 style="text-align:center; margin-top:30px;" id="dashboard-title">📊 Seed Recommendation Visualizations</h2>
+  <div class="dashboard">
+    <div class="card" onclick="openNewTab('/static/images/seed/feature_importance.html')"><h3 id="chart1-title">⚙ Feature Importance</h3><iframe src="/static/images/seed/feature_importance.html"></iframe></div>
+    <div class="card" onclick="openNewTab('/static/images/seed/seed_distribution.html')"><h3 id="chart2-title">🌱 Seed Variety Distribution</h3><iframe src="/static/images/seed/seed_distribution.html"></iframe></div>
+    <div class="card" onclick="openNewTab('/static/images/seed/crop_vs_seed.html')"><h3 id="chart3-title">🌾 Crop vs Seed Relationship</h3><iframe src="/static/images/seed/crop_vs_seed.html"></iframe></div>
+    <div class="card" onclick="openNewTab('/static/images/seed/soil_type_vs_seed.html')"><h3 id="chart4-title">🧪 Soil Type vs Seed Variety</h3><iframe src="/static/images/seed/soil_type_vs_seed.html"></iframe></div>
+    <div class="card" onclick="openNewTab('/static/images/seed/expected_yield.html')"><h3 id="chart5-title">📈 Expected Yield vs Seed Variety</h3><iframe src="/static/images/seed/expected_yield.html"></iframe></div>
+    <div class="card" onclick="openNewTab('/static/images/seed/soil_radar.html')"><h3 id="chart6-title">🧭 Soil Nutrient Radar</h3><iframe src="/static/images/seed/soil_radar.html"></iframe></div>
+    <div class="card" onclick="openNewTab('/static/images/seed/correlation_heatmap.html')"><h3 id="chart7-title">🔍 Feature Correlation Heatmap</h3><iframe src="/static/images/seed/correlation_heatmap.html"></iframe></div>
+  </div>
+</div>
+
+<script>
+function openNewTab(url){ window.open(url, "_blank"); }
+
+const translations = {
+  en:{formTitle:"🧑‍🌾 Enter Farm Details", labels:["Soil pH","Nitrogen (N)","Phosphorus (P)","Potassium (K)","Temperature (°C)","Rainfall (mm)","Humidity (%)","Season Duration (days)","Soil Type","Region"], soilOptions:["--Select Soil Type--","Loamy","Sandy","Clay","Red","Black"], regionOptions:["--Select Region--","North","South","East","West","Central"], submit:"🔍 Get Seed Recommendation", predTitle:"🌱 Predicted Crop: ", topSeeds:"Top Recommended Seeds", dashboardTitle:"📊 Seed Recommendation Visualizations", chartTitles:["⚙ Feature Importance","🌱 Seed Variety Distribution","🌾 Crop vs Seed Relationship","🧪 Soil Type vs Seed Variety","📈 Expected Yield vs Seed Variety","🧭 Soil Nutrient Radar","🔍 Feature Correlation Heatmap"]},
+  ta:{formTitle:"🧑‍🌾 பண்ணை விவரங்களை உள்ளிடவும்", labels:["மண் pH","நைட்ரஜன் (N)","பாஸ்பரஸ் (P)","பொட்டாசியம் (K)","வெப்பநிலை (°C)","மழை (மிமீ)","சோலை (Humidity %)","பசுமை காலம் (நாட்கள்)","மண் வகை","மண்டலம்"], soilOptions:["--மண் வகையை தேர்ந்தெடுக்கவும்--","மண் (Loamy)","மணல்கல் (Sandy)","களிமண் (Clay)","சிவப்பு (Red)","கருப்பு (Black)"], regionOptions:["--மண்டலத்தை தேர்ந்தெடுக்கவும்--","வடக்கு","தெற்கு","கிழக்கு","மேற்கு","மத்திய"], submit:"🔍 விதை பரிந்துரை பெறுக", predTitle:"🌱 கணிக்கப்பட்ட பயிர்: ", topSeeds:"முக்கிய பரிந்துரைக்கப்பட்ட விதைகள்", dashboardTitle:"📊 விதை பரிந்துரை காட்சிப்படுத்தல்கள்", chartTitles:["⚙ அம்ச முக்கியத்துவம்","🌱 விதை வகை விநியோகம்","🌾 பயிர் vs விதை உறவு","🧪 மண் வகை vs விதை","📈 எதிர்பார்க்கப்படும் உற்பத்தி vs விதை","🧭 மண் ஊட்டச்சத்து ராடார்","🔍 அம்ச உறவு ஹீட்மேப்"]},
+  hi:{formTitle:"🧑‍🌾 खेत विवरण दर्ज करें", labels:["मिट्टी pH","नाइट्रोजन (N)","फॉस्फोरस (P)","पोटैशियम (K)","तापमान (°C)","वर्षा (मिमी)","आर्द्रता (%)","मौसमी अवधि (दिन)","मिट्टी प्रकार","क्षेत्र"], soilOptions:["--मिट्टी प्रकार चुनें--","दोमट (Loamy)","रेतीली (Sandy)","मिट्टी (Clay)","लाल (Red)","काला (Black)"], regionOptions:["--क्षेत्र चुनें--","उत्तर","दक्षिण","पूर्व","पश्चिम","केंद्र"], submit:"🔍 बीज सिफ़ारिश प्राप्त करें", predTitle:"🌱 भविष्यवाणी फसल: ", topSeeds:"शीर्ष अनुशंसित बीज", dashboardTitle:"📊 बीज सिफ़ारिश विज़ुअलाइज़ेशन", chartTitles:["⚙ फीचर महत्व","🌱 बीज विविधता वितरण","🌾 फसल बनाम बीज संबंध","🧪 मिट्टी प्रकार बनाम बीज","📈 अपेक्षित उत्पादन बनाम बीज","🧭 मिट्टी पोषण रडार","🔍 फीचर सहसंबंध हीटमैप"]}
+};
+
+function changeLanguage(){
+  const lang = document.getElementById('lang').value;
+  localStorage.setItem('selectedLang', lang);
+
+  // Header and nav
+  document.getElementById('header-title').innerText = "🌱 Uzhavan Saathee - Seed Dashboard";
+  document.getElementById('home-link').innerText = lang==='en'? "Home": lang==='ta'? "முகப்பு": "होम";
+  document.getElementById('seed-link').innerText = lang==='en'? "Seed Dashboard": lang==='ta'? "விதை டாஷ்போர்டு": "बीज डैशबोर्ड";
+  document.getElementById('disease-link').innerText = lang==='en'? "Disease Dashboard": lang==='ta'? "நோய் டாஷ்போர்டு": "रोग डैशबोर्ड";
+
+  // Form labels & selects
+  document.getElementById('form-title').innerText = translations[lang].formTitle;
+  ["label-pH","label-N","label-P","label-K","label-Temp","label-Rainfall","label-Humidity","label-Season","label-Soil","label-Region"].forEach((id,i)=>{
+    document.getElementById(id).innerText = translations[lang].labels[i];
+  });
+  const soilSelect = document.getElementById('Soil_Type');
+  soilSelect.innerHTML = "";
+  translations[lang].soilOptions.forEach(opt=>{ const o=document.createElement('option'); o.value=opt; o.innerText=opt; soilSelect.appendChild(o); });
+  const regionSelect = document.getElementById('Region');
+  regionSelect.innerHTML = "";
+  translations[lang].regionOptions.forEach(opt=>{ const o=document.createElement('option'); o.value=opt; o.innerText=opt; regionSelect.appendChild(o); });
+
+  document.getElementById('submit-btn').innerText = translations[lang].submit;
+
+  // Prediction block
+  const predEl = document.getElementById('pred-title');
+  if(predEl){
+    const cropName = predEl.getAttribute('data-crop');
+    predEl.innerText = translations[lang].predTitle + cropName;
+    const topSeedsEl = document.getElementById('top-seeds-title');
+    if(topSeedsEl) topSeedsEl.innerText = translations[lang].topSeeds;
+  }
+
+  // Dashboard titles
+  const dashboardTitle = document.getElementById('dashboard-title');
+  if(dashboardTitle) dashboardTitle.innerText = translations[lang].dashboardTitle;
+  translations[lang].chartTitles.forEach((title,i)=>{
+    const chartId = "chart"+(i+1)+"-title";
+    if(document.getElementById(chartId)) document.getElementById(chartId).innerText = title;
+  });
+}
+
+// Load saved language
+window.addEventListener('DOMContentLoaded',()=>{
+  const savedLang = localStorage.getItem('selectedLang') || 'en';
+  document.getElementById('lang').value = savedLang;
+  changeLanguage();
+});
+</script>
+{% include "_chatbot.html" %}
+</body>
+</html>

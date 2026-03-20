@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Models and Data
+models/
+data/
+*.JPG
+*.jpg
+*.png
+*.h5
+*.joblib
+
+# Static uploads or dynamically generated files
+src/app/static/uploads/
+src/app/static/images/dynamic_visualization_*.html
+
+# IDEs
+.vscode/
+.idea/
+
+# Large project structure files
+project_structure.txt

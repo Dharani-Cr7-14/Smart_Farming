@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🌿 Uzhavan Saathee - Disease Dashboard</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0b0c10, #1f2833);
+      color: #ffffff;
+      margin: 0;
+      padding: 0;
+      visibility: hidden; /* Hide until translations applied */
+    }
+    header {
+      background: #45a29e;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.5);
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 15px;
+      font-weight: bold;
+      transition: color 0.3s ease;
+    }
+    nav a:hover { color: #66fcf1; }
+    .language-select { margin-top: 10px; }
+    .container { padding: 20px; max-width: 1400px; margin: auto; }
+
+    .upload-section {
+      background: #1f2833;
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    }
+    .upload-section input[type="file"], .upload-section button {
+      padding: 10px;
+      margin: 10px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .upload-section input[type="file"] { background: #0b0c10; color: #66fcf1; }
+    .upload-section button { background: #45a29e; color: #fff; transition: 0.3s; }
+    .upload-section button:hover { background: #66fcf1; color: #0b0c10; }
+
+    .prediction-card {
+      background: #1f2833;
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      text-align: center;
+    }
+    .prediction-card h2 { color: #66fcf1; margin-bottom: 10px; }
+    .prediction-card p { margin: 5px 0; }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      justify-items: center;
+      align-items: start;
+    }
+    .card {
+      background: #0b0c10;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(102,252,241,0.3);
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      width: 280px;
+    }
+    .card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 25px rgba(102,252,241,0.6);
+    }
+    .card h3 { color: #66fcf1; font-size: 15px; margin-bottom: 10px; }
+    iframe {
+      width: 100%;
+      height: 260px;
+      border: none;
+      border-radius: 10px;
+      background: #0b0c10;
+      pointer-events: none;
+    }
+    @media(max-width: 700px){ iframe { height: 200px; } .card { width: 100%; } }
+  </style>
+</head>
+<body>
+  <header>
+    <span id="header-title">🌾 Uzhavan Saathee - Disease Dashboard</span>
+    <nav>
+      <a href="/" id="home-link">Home</a>
+      <a href="/seed_dashboard" id="seed-link">Seed Dashboard</a>
+      <a href="/disease_dashboard" id="disease-link">Disease Dashboard</a>
+    </nav>
+    <div class="language-select">
+      <label for="lang">Select Language: </label>
+      <select id="lang" onchange="changeLanguage()">
+        <option value="en">English</option>
+        <option value="ta">தமிழ்</option>
+        <option value="hi">हिन्दी</option>
+      </select>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Upload Section -->
+    <div class="upload-section">
+      <h2 id="upload-title">🖼 Upload Leaf Image for Disease Prediction</h2>
+      <form method="post" action="/disease_dashboard" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*" required />
+        <button type="submit" id="upload-btn">Predict Disease</button>
+      </form>
+    </div>
+
+    <!-- Prediction Result -->
+    {% if prediction %}
+    <div class="prediction-card">
+      <h2 id="pred-title">🌿 Predicted Disease: {{ prediction.pred_class }}</h2>
+      <p><b id="confidence-label">Confidence:</b> {{ '{:.2f}'.format(prediction.confidence) }}%</p>
+      <img src="{{ prediction.image_path }}" alt="Uploaded Leaf" style="max-width:200px; border-radius:10px; margin-top:10px;" />
+    </div>
+    {% endif %}
+
+    <!-- Dashboard Visualizations -->
+    <h2 style="text-align:center; margin:25px 0;" id="dashboard-title">📊 Disease Prediction Visualizations</h2>
+    <div class="dashboard">
+      <div class="card" onclick="openNewTab('/static/images/healthy_vs_diseased.html')">
+        <h3 id="chart1-title">🌿 Overall Leaf Health</h3>
+        <iframe src="/static/images/healthy_vs_diseased.html"></iframe>
+      </div>
+      <div class="card" onclick="openNewTab('/static/images/disease_type_distribution.html')">
+        <h3 id="chart2-title">🍂 Disease Type Distribution</h3>
+        <iframe src="/static/images/disease_type_distribution.html"></iframe>
+      </div>
+      <div class="card" onclick="openNewTab('/static/images/model_accuracy_gauge.html')">
+        <h3 id="chart3-title">🤖 Model Accuracy Gauge</h3>
+        <iframe src="/static/images/model_accuracy_gauge.html"></iframe>
+      </div>
+      {% if prediction %}
+      <div class="card" onclick="openNewTab('/static/images/dynamic_visualization_1.html')">
+        <h3 id="chart4-title">📊 Prediction Confidence Gauge</h3>
+        <iframe src="/static/images/dynamic_visualization_1.html"></iframe>
+      </div>
+      <div class="card" onclick="openNewTab('/static/images/dynamic_visualization_2.html')">
+        <h3 id="chart5-title">📈 Confidence Bar Chart</h3>
+        <iframe src="/static/images/dynamic_visualization_2.html"></iframe>
+      </div>
+      <div class="card" onclick="openNewTab('/static/images/dynamic_visualization_3.html')">
+        <h3 id="chart6-title">🥧 Confidence Pie Chart</h3>
+        <iframe src="/static/images/dynamic_visualization_3.html"></iframe>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <script>
+    function openNewTab(url) { window.open(url, '_blank'); }
+
+    const translations = {
+      en: {
+        headerTitle: "🌾 Uzhavan Saathee - Disease Dashboard",
+        home: "Home",
+        seed: "Seed Dashboard",
+        disease: "Disease Dashboard",
+        uploadTitle: "🖼 Upload Leaf Image for Disease Prediction",
+        uploadBtn: "Predict Disease",
+        predTitle: "🌿 Predicted Disease: ",
+        confidenceLabel: "Confidence:",
+        dashboardTitle: "📊 Disease Prediction Visualizations",
+        chartTitles: ["🌿 Overall Leaf Health","🍂 Disease Type Distribution","🤖 Model Accuracy Gauge","📊 Prediction Confidence Gauge","📈 Confidence Bar Chart","🥧 Confidence Pie Chart"]
+      },
+      ta: {
+        headerTitle: "🌾 உழவன் சாத்தி - நோய் டாஷ்போர்டு",
+        home: "முகப்பு",
+        seed: "விதை டாஷ்போர்டு",
+        disease: "நோய் டாஷ்போர்டு",
+        uploadTitle: "🖼 நோய் முன்னறிவிக்க எலை படத்தை பதிவேற்றவும்",
+        uploadBtn: "நோய் கணிக்கவும்",
+        predTitle: "🌿 கணிக்கப்பட்ட நோய்: ",
+        confidenceLabel: "நம்பகத்தன்மை:",
+        dashboardTitle: "📊 நோய் முன்னறிவு காட்சிப்படுத்தல்கள்",
+        chartTitles: ["🌿 எலை சுகாதாரம்","🍂 நோய் வகை விநியோகம்","🤖 மாடல் துல்லியம்","📊 முன்னறிவு நம்பிக்கை காட்சி","📈 நம்பிக்கை பார்பட்டியல்","🥧 நம்பிக்கை பை வரைபடம்"]
+      },
+      hi: {
+        headerTitle: "🌾 उज़्हवन साथी - रोग डैशबोर्ड",
+        home: "होम",
+        seed: "बीज डैशबोर्ड",
+        disease: "रोग डैशबोर्ड",
+        uploadTitle: "🖼 रोग पूर्वानुमान के लिए पत्ती छवि अपलोड करें",
+        uploadBtn: "रोग की भविष्यवाणी करें",
+        predTitle: "🌿 भविष्यवाणी रोग: ",
+        confidenceLabel: "विश्वसनीयता:",
+        dashboardTitle: "📊 रोग पूर्वानुमान विज़ुअलाइज़ेशन",
+        chartTitles: ["🌿 समग्र पत्ती स्वास्थ्य","🍂 रोग प्रकार वितरण","🤖 मॉडल सटीकता गेज","📊 पूर्वानुमान विश्वसनीयता गेज","📈 विश्वसनीयता बार चार्ट","🥧 विश्वसनीयता पाई चार्ट"]
+      }
+    };
+
+    function changeLanguage() {
+      const lang = document.getElementById('lang').value;
+      localStorage.setItem('language', lang); // save selection
+
+      // Header & nav
+      document.getElementById('header-title').innerText = translations[lang].headerTitle;
+      document.getElementById('home-link').innerText = translations[lang].home;
+      document.getElementById('seed-link').innerText = translations[lang].seed;
+      document.getElementById('disease-link').innerText = translations[lang].disease;
+
+      // Upload section
+      document.getElementById('upload-title').innerText = translations[lang].uploadTitle;
+      document.getElementById('upload-btn').innerText = translations[lang].uploadBtn;
+
+      // Prediction result
+      const predEl = document.getElementById('pred-title');
+      if (predEl) predEl.innerText = translations[lang].predTitle + "{{ prediction.pred_class if prediction }}";
+      const confEl = document.getElementById('confidence-label');
+      if (confEl) confEl.innerText = translations[lang].confidenceLabel;
+
+      // Dashboard title
+      document.getElementById('dashboard-title').innerText = translations[lang].dashboardTitle;
+
+      // Chart titles
+      for (let i = 1; i <= 6; i++) {
+        const chartId = "chart" + i + "-title";
+        if (document.getElementById(chartId)) {
+          document.getElementById(chartId).innerText = translations[lang].chartTitles[i-1];
+        }
+      }
+    }
+
+    // On page load: restore language and show body
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedLang = localStorage.getItem('language') || 'en';
+      document.getElementById('lang').value = savedLang;
+      changeLanguage();
+      document.body.style.visibility = 'visible'; // show after translations applied
+    });
+  </script>
+{% include "_chatbot.html" %}
+</body>
+</html>

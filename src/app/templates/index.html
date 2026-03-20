@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🌾 Uzhavan Saathee</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0b0c10, #1f2833);
+      color: white;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: #45a29e;
+      padding: 20px;
+      font-size: 28px;
+      font-weight: bold;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.5);
+    }
+
+    select {
+      padding: 10px;
+      margin: 10px;
+      border-radius: 10px;
+      border: none;
+      background: #0b0c10;
+      color: #66fcf1;
+      font-size: 16px;
+    }
+
+    a {
+      display: inline-block;
+      background: #45a29e;
+      color: white;
+      padding: 12px 25px;
+      border-radius: 10px;
+      text-decoration: none;
+      margin: 15px;
+      transition: 0.3s;
+      font-weight: bold;
+    }
+
+    a:hover {
+      background: #66fcf1;
+      color: #0b0c10;
+    }
+  </style>
+</head>
+<body>
+  <header id="title">{{ lang_dict.home_title }}</header>
+
+  <h2 id="subtitle">{{ lang_dict.home_subtitle }}</h2>
+
+  <label for="languageSelect" id="languageLabel">🌐 Choose Language:</label>
+  <select id="languageSelect">
+    <option value="en" {% if lang == "en" %}selected{% endif %}>English</option>
+    <option value="ta" {% if lang == "ta" %}selected{% endif %}>தமிழ் (Tamil)</option>
+    <option value="hi" {% if lang == "hi" %}selected{% endif %}>हिन्दी (Hindi)</option>
+  </select>
+
+  <div>
+    <a href="/seed_dashboard?lang={{ lang }}" id="seedBtn">{{ lang_dict.seed }}</a>
+    <a href="/disease_dashboard?lang={{ lang }}" id="diseaseBtn">{{ lang_dict.disease }}</a>
+  </div>
+
+  <script>
+    const languageSelect = document.getElementById("languageSelect");
+
+    // Save user selection in localStorage
+    const savedLang = localStorage.getItem("language") || "{{ lang }}";
+    languageSelect.value = savedLang;
+
+    languageSelect.addEventListener("change", function() {
+      const selectedLang = this.value;
+      localStorage.setItem("language", selectedLang);
+      // Redirect with ?lang= so FastAPI can use correct lang_dict
+      const currentPath = window.location.pathname;
+      window.location.href = currentPath + "?lang=" + selectedLang;
+    });
+  </script>
+  {% include "_chatbot.html" %}
+</body>
+</html>
