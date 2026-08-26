@@ -24,3 +24,5 @@ src/app/static/images/dynamic_visualization_*.html
 
 # Large project structure files
 project_structure.txt
+disease_train_env/
+*.db

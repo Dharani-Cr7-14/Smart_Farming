@@ -7,14 +7,27 @@ import os
 from tensorflow.keras.preprocessing import image
 import matplotlib.pyplot as plt
 
-# Load model
-model_path = os.path.join("models", "plant_disease_model.h5")
-model = tf.keras.models.load_model(model_path)
-
-# Load class indices
-with open("class_indices.json", "r") as f:
-    class_indices = json.load(f)
-idx_to_class = {v: k for k, v in class_indices.items()}
+# Load model and class indices
+try:
+    import sys
+    model_path = os.path.join("models", "plant_disease_model.h5")
+    if not os.path.exists(model_path):
+        raise FileNotFoundError(f"Model file not found at {model_path}")
+    model = tf.keras.models.load_model(model_path)
+    
+    indices_path = "class_indices.json"
+    if not os.path.exists(indices_path):
+        indices_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "class_indices.json")
+    if not os.path.exists(indices_path):
+         raise FileNotFoundError("class_indices.json file not found")
+         
+    with open(indices_path, "r") as f:
+        class_indices = json.load(f)
+    idx_to_class = {v: k for k, v in class_indices.items()}
+except Exception as e:
+    print(f"❌ Error: Required assets could not be loaded ({str(e)}).")
+    print("Please ensure the plant disease model is trained and class indices are generated.")
+    sys.exit(1)
 
 def predict_disease(img_path):
     img = image.load_img(img_path, target_size=(224, 224))

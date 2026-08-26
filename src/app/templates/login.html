@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ lang_dict.home_title }} - Login / Register</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="auth-wrapper">
+  <div class="auth-card">
+    
+    <div class="auth-header">
+      <i class="fa-solid fa-wheat-awn" style="color: var(--accent-green); font-size: 44px; margin-bottom: 12px;"></i>
+      <h1>{{ lang_dict.home_title }}</h1>
+      <p>{{ lang_dict.home_subtitle }}</p>
+    </div>
+
+    <!-- Alert Notifications -->
+    {% if error %}
+    <div class="alert-popup error">
+      <i class="fa-solid fa-circle-exclamation"></i>
+      <span>{{ error }}</span>
+    </div>
+    {% endif %}
+
+    {% if success %}
+    <div class="alert-popup success">
+      <i class="fa-solid fa-circle-check"></i>
+      <span>{{ success }}</span>
+    </div>
+    {% endif %}
+
+    <!-- Auth Toggles Container -->
+    <div class="tab-container" style="justify-content: center; border-bottom: none; margin-bottom: 30px;">
+      <button class="tab-btn active" id="tab-login-btn" onclick="toggleAuthTab('login')">Sign In</button>
+      <button class="tab-btn" id="tab-register-btn" onclick="toggleAuthTab('register')">Register</button>
+    </div>
+
+    <!-- Sign In Form -->
+    <form id="login-form" method="post" action="/auth/login">
+      <input type="hidden" name="lang" value="{{ lang }}">
+      <div class="form-group">
+        <label for="login-username"><i class="fa-solid fa-user"></i> Username</label>
+        <input type="text" id="login-username" name="username" placeholder="Enter username" required>
+      </div>
+      <div class="form-group">
+        <label for="login-password"><i class="fa-solid fa-lock"></i> Password</label>
+        <input type="password" id="login-password" name="password" placeholder="Enter password" required>
+      </div>
+      <button type="submit" class="premium-btn primary" style="width: 100%; margin-top: 10px;">
+        <i class="fa-solid fa-right-to-bracket"></i> Sign In
+      </button>
+    </form>
+
+    <!-- Registration Form -->
+    <form id="register-form" method="post" action="/auth/register" style="display: none;">
+      <input type="hidden" name="lang" value="{{ lang }}">
+      <div class="form-group">
+        <label for="reg-username"><i class="fa-solid fa-user-plus"></i> Choose Username</label>
+        <input type="text" id="reg-username" name="username" placeholder="Choose username" required>
+      </div>
+      <div class="form-group">
+        <label for="reg-password"><i class="fa-solid fa-lock"></i> Password</label>
+        <input type="password" id="reg-password" name="password" placeholder="Choose password" required>
+      </div>
+      <div class="form-group">
+        <label for="reg-region"><i class="fa-solid fa-map-location-dot"></i> Farming Region</label>
+        <select id="reg-region" name="region">
+          <option value="North">North</option>
+          <option value="South">South</option>
+          <option value="East">East</option>
+          <option value="West">West</option>
+          <option value="Central">Central</option>
+        </select>
+      </div>
+      <button type="submit" class="premium-btn primary" style="width: 100%; margin-top: 10px;">
+        <i class="fa-solid fa-user-check"></i> Register Account
+      </button>
+    </form>
+
+    <!-- Language Footer -->
+    <div style="margin-top: 30px; text-align: center;">
+      <div class="select-lang-container" style="display: inline-block;">
+        <select id="lang-select" onchange="changeLanguage()" style="padding: 6px 12px; font-size: 13px;">
+          <option value="en">English</option>
+          <option value="ta">தமிழ்</option>
+          <option value="hi">हिन्दी</option>
+        </select>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="/static/js/script.js"></script>
+  <script>
+    function toggleAuthTab(mode) {
+      const loginForm = document.getElementById("login-form");
+      const registerForm = document.getElementById("register-form");
+      const loginBtn = document.getElementById("tab-login-btn");
+      const registerBtn = document.getElementById("tab-register-btn");
+
+      if (mode === 'login') {
+        loginForm.style.display = "block";
+        registerForm.style.display = "none";
+        loginBtn.classList.add("active");
+        registerBtn.classList.remove("active");
+      } else {
+        loginForm.style.display = "none";
+        registerForm.style.display = "block";
+        loginBtn.classList.remove("active");
+        registerBtn.classList.add("active");
+      }
+    }
+
+    // Auto-swap to register tab if registration failed/was attempted
+    {% if error and "exists" in error %}
+      toggleAuthTab('register');
+    {% endif %}
+  </script>
+</body>
+</html>

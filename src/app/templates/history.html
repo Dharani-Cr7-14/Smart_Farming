@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Prediction History - Smart Farming Decision Support System{% endblock %}
+{% block page_title %}Prediction History{% endblock %}
+
+{% block content %}
+<div class="premium-card">
+  <p style="color: var(--color-text-secondary); margin-bottom: 24px; font-size: 15px;">
+    Below are the historical prediction and chatbot logs saved for your farming profile.
+  </p>
+
+  <!-- Navigation tab toggles -->
+  <div class="tab-container" style="margin-bottom: 24px;">
+    <button class="tab-btn active" id="tab-crop-btn" onclick="toggleHistoryTab('crop')">Crop & Seed Queries</button>
+    <button class="tab-btn" id="tab-disease-btn" onclick="toggleHistoryTab('disease')">Plant Disease Scans</button>
+    <button class="tab-btn" id="tab-chat-btn" onclick="toggleHistoryTab('chat')">Chatbot Advisor History</button>
+  </div>
+
+  <!-- Crop recommendation history table -->
+  <div id="crop-history-section">
+    {% if crop_logs %}
+    <div class="table-responsive">
+      <table class="premium-table">
+        <thead>
+          <tr>
+            <th>Date Logged</th>
+            <th>Region & Soil Type</th>
+            <th>Soil pH</th>
+            <th>NPK Ratio</th>
+            <th>Predicted Crop</th>
+            <th>Top Suggested Seeds</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in crop_logs %}
+          <tr>
+            <td>{{ log.created_at[:16].replace('T', ' ') }}</td>
+            <td>{{ log.region }} / {{ log.soil_type }}</td>
+            <td>{{ log.pH }}</td>
+            <td>{{ log.N }} - {{ log.P }} - {{ log.K }}</td>
+            <td style="font-weight: 700; color: var(--accent-green); text-transform: uppercase;">{{ log.predicted_crop }}</td>
+            <td>
+              {% for seed, prob in log.top_seeds %}
+              <div style="font-size: 13px;">• {{ seed }} ({{ '{:.1f}'.format(prob | float) }})</div>
+              {% endfor %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 60px 20px; color: var(--color-text-secondary);">
+      <i class="fa-solid fa-seedling" style="font-size: 40px; margin-bottom: 16px; display: block; color: var(--glass-border);"></i>
+      No crop recommendation entries found. Run your first recommendation on the <a href="/seed_dashboard" style="color: var(--accent-green);">Crop page</a>.
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Plant disease scan history table -->
+  <div id="disease-history-section" style="display: none;">
+    {% if disease_logs %}
+    <div class="table-responsive">
+      <table class="premium-table">
+        <thead>
+          <tr>
+            <th>Date Logged</th>
+            <th>Leaf Photo File</th>
+            <th>Predicted Pathogen</th>
+            <th>Confidence</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in disease_logs %}
+          <tr>
+            <td>{{ log.created_at[:16].replace('T', ' ') }}</td>
+            <td>
+              <a href="/static/uploads/{% if log.image_name %}{{ log.image_name }}{% endif %}" target="_blank" style="color: var(--accent-cyan); text-decoration: none;">
+                <i class="fa-regular fa-image"></i> {{ log.image_name }}
+              </a>
+            </td>
+            <td style="font-weight: 700; color: var(--warning-color);">{{ log.predicted_class }}</td>
+            <td>{{ '{:.2f}'.format(log.confidence) }}%</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 60px 20px; color: var(--color-text-secondary);">
+      <i class="fa-solid fa-leaf" style="font-size: 40px; margin-bottom: 16px; display: block; color: var(--glass-border);"></i>
+      No leaf disease scans found. Run your first leaf check on the <a href="/disease_dashboard" style="color: var(--accent-cyan);">Disease page</a>.
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Chatbot history table -->
+  <div id="chat-history-section" style="display: none;">
+    {% if chat_logs %}
+    <div class="table-responsive">
+      <table class="premium-table">
+        <thead>
+          <tr>
+            <th>Date Logged</th>
+            <th>Language</th>
+            <th>Sender (Role)</th>
+            <th>Message</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in chat_logs %}
+          <tr>
+            <td>{{ log.created_at[:16].replace('T', ' ') }}</td>
+            <td style="text-transform: uppercase;">{{ log.language }}</td>
+            <td style="font-weight: 700; color: {% if log.role == 'user' %}var(--accent-cyan){% else %}var(--accent-green){% endif %}; text-transform: uppercase;">
+              {{ log.role }}
+            </td>
+            <td>{{ log.message }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 60px 20px; color: var(--color-text-secondary);">
+      <i class="fa-solid fa-comments" style="font-size: 40px; margin-bottom: 16px; display: block; color: var(--glass-border);"></i>
+      No chatbot advisor history found. Run your first query on the <a href="/chatbot" style="color: var(--accent-green);">Chat page</a>.
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  function toggleHistoryTab(mode) {
+    const cropSection = document.getElementById("crop-history-section");
+    const diseaseSection = document.getElementById("disease-history-section");
+    const chatSection = document.getElementById("chat-history-section");
+    
+    const cropBtn = document.getElementById("tab-crop-btn");
+    const diseaseBtn = document.getElementById("tab-disease-btn");
+    const chatBtn = document.getElementById("tab-chat-btn");
+
+    if (mode === 'crop') {
+      cropSection.style.display = "block";
+      diseaseSection.style.display = "none";
+      chatSection.style.display = "none";
+      
+      cropBtn.classList.add("active");
+      diseaseBtn.classList.remove("active");
+      chatBtn.classList.remove("active");
+    } else if (mode === 'disease') {
+      cropSection.style.display = "none";
+      diseaseSection.style.display = "block";
+      chatSection.style.display = "none";
+      
+      cropBtn.classList.remove("active");
+      diseaseBtn.classList.add("active");
+      chatBtn.classList.remove("active");
+    } else {
+      cropSection.style.display = "none";
+      diseaseSection.style.display = "none";
+      chatSection.style.display = "block";
+      
+      cropBtn.classList.remove("active");
+      diseaseBtn.classList.remove("active");
+      chatBtn.classList.add("active");
+    }
+  }
+</script>
+{% endblock %}

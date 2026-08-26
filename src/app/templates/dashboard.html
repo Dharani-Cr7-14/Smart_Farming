@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Smart Farming Decision Support System{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-grid">
+  
+  <!-- Welcome Banner Card -->
+  <div class="premium-card welcome-banner">
+    <div class="welcome-text">
+      <h2 style="font-weight: 700; margin-bottom: 10px;">👋 Welcome, <span style="color: var(--accent-green);">{{ user.username }}</span>!</h2>
+      <p>Welcome to the <b>Smart Farming Decision Support System</b>. Here is your farm summary for the <b>{{ user.region or 'South' }}</b> region.</p>
+    </div>
+    <div class="welcome-icon" style="font-size: 64px; color: var(--accent-green);">
+      <i class="fa-solid fa-cloud-sun-rain"></i>
+    </div>
+  </div>
+
+  <!-- Farm Overview Mock Widget -->
+  <div class="premium-card">
+    <h3 style="margin-bottom: 16px; color: var(--accent-cyan-dark); font-weight: 700; display: flex; align-items: center; gap: 10px;">
+      <i class="fa-solid fa-temperature-three-quarters"></i> Farm Condition
+    </h3>
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+      <div style="display: flex; justify-content: space-between; font-size: 15px;">
+        <span style="color: var(--color-text-secondary);">Temperature:</span>
+        <span style="font-weight: 600;">28.5 °C (Sunny)</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; font-size: 15px;">
+        <span style="color: var(--color-text-secondary);">Humidity:</span>
+        <span style="font-weight: 600;">64 %</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; font-size: 15px;">
+        <span style="color: var(--color-text-secondary);">Soil Health:</span>
+        <span style="font-weight: 600; color: var(--accent-green);"><i class="fa-solid fa-circle-check"></i> Good</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shortcut Widget 1 -->
+  <div class="premium-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+    <div>
+      <h3 style="margin-bottom: 12px; font-weight: 700; color: var(--accent-green);"><i class="fa-solid fa-seedling"></i> Crop & Seeds</h3>
+      <p style="color: var(--color-text-secondary); font-size: 14px; line-height: 1.5; margin-bottom: 16px;">Recommends crops and seed varieties optimized for pH, Nitrogen, and weather levels.</p>
+    </div>
+    <a href="/seed_dashboard?lang={{ lang }}" class="premium-btn primary" style="width: 100%;">
+      <i class="fa-solid fa-magnifying-glass-chart"></i> Recommendation Engine
+    </a>
+  </div>
+
+  <!-- Shortcut Widget 2 -->
+  <div class="premium-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+    <div>
+      <h3 style="margin-bottom: 12px; font-weight: 700; color: var(--danger-color);"><i class="fa-solid fa-leaf"></i> Disease Classifier</h3>
+      <p style="color: var(--color-text-secondary); font-size: 14px; line-height: 1.5; margin-bottom: 16px;">Identify crop disease pathogens instantly by uploading a photograph of a crop leaf.</p>
+    </div>
+    <a href="/disease_dashboard?lang={{ lang }}" class="premium-btn primary" style="width: 100%; background: var(--accent-cyan); color: var(--bg-primary);">
+      <i class="fa-solid fa-camera"></i> Diagnostic Scan
+    </a>
+  </div>
+
+</div>
+
+<!-- Recent Queries Tables -->
+<div class="premium-card" style="margin-top: 32px;">
+  <h3 style="margin-bottom: 20px; font-weight: 700;"><i class="fa-solid fa-clock-rotate-left"></i> Recent Activity Logs</h3>
+
+  <div class="tab-container" style="margin-bottom: 20px;">
+    <button class="tab-btn active" id="tab-crop-btn" onclick="switchDashboardTab('crop')">Crop Searches</button>
+    <button class="tab-btn" id="tab-disease-btn" onclick="switchDashboardTab('disease')">Disease Scans</button>
+  </div>
+
+  <!-- Recent Crops log Table -->
+  <div id="crop-logs-container">
+    {% if crop_logs %}
+    <div class="table-responsive">
+      <table class="premium-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Soil Type</th>
+            <th>Soil pH</th>
+            <th>NPK Values</th>
+            <th>Recommended Crop</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in crop_logs %}
+          <tr>
+            <td>{{ log.created_at[:16].replace('T', ' ') }}</td>
+            <td>{{ log.soil_type }}</td>
+            <td>{{ log.pH }}</td>
+            <td>{{ log.N }} - {{ log.P }} - {{ log.K }}</td>
+            <td style="color: var(--accent-green); font-weight: 600;">{{ log.predicted_crop | upper }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 40px; color: var(--color-text-secondary);">
+      <i class="fa-solid fa-calendar-minus" style="font-size: 32px; margin-bottom: 12px; display: block;"></i>
+      No crop predictions logged yet.
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Recent Diseases log Table -->
+  <div id="disease-logs-container" style="display: none;">
+    {% if disease_logs %}
+    <div class="table-responsive">
+      <table class="premium-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Image Name</th>
+            <th>Predicted Disease</th>
+            <th>Confidence</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in disease_logs %}
+          <tr>
+            <td>{{ log.created_at[:16].replace('T', ' ') }}</td>
+            <td>{{ log.image_name }}</td>
+            <td style="font-weight: 600; color: var(--warning-color);">{{ log.predicted_class }}</td>
+            <td>{{ '{:.2f}'.format(log.confidence) }}%</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 40px; color: var(--color-text-secondary);">
+      <i class="fa-solid fa-calendar-minus" style="font-size: 32px; margin-bottom: 12px; display: block;"></i>
+      No leaf disease scans logged yet.
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  function switchDashboardTab(tab) {
+    const cropContainer = document.getElementById("crop-logs-container");
+    const diseaseContainer = document.getElementById("disease-logs-container");
+    const cropBtn = document.getElementById("tab-crop-btn");
+    const diseaseBtn = document.getElementById("tab-disease-btn");
+
+    if (tab === 'crop') {
+      cropContainer.style.display = "block";
+      diseaseContainer.style.display = "none";
+      cropBtn.classList.add("active");
+      diseaseBtn.classList.remove("active");
+    } else {
+      cropContainer.style.display = "none";
+      diseaseContainer.style.display = "block";
+      cropBtn.classList.remove("active");
+      diseaseBtn.classList.add("active");
+    }
+  }
+</script>
+{% endblock %}

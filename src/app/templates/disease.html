@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}{{ lang_dict.disease }} - Smart Farming Decision Support System{% endblock %}
+{% block page_title %}{{ lang_dict.disease }}{% endblock %}
+
+{% block content %}
+<!-- Error messages -->
+{% if error %}
+<div class="alert-popup error" style="margin-bottom: 24px;">
+  <i class="fa-solid fa-circle-exclamation"></i>
+  <span>{{ error }}</span>
+</div>
+{% endif %}
+
+<div class="dashboard-grid" style="grid-template-columns: 1fr 2fr; align-items: start;">
+  
+  <!-- Image Upload Form -->
+  <div class="premium-card">
+    <h3 style="margin-bottom: 20px; font-weight: 700;"><i class="fa-solid fa-camera"></i> Diagnostic Scan</h3>
+    
+    <form method="post" action="/disease_dashboard" enctype="multipart/form-data">
+      <input type="hidden" name="lang" value="{{ lang }}">
+      
+      <!-- Drag Drop container -->
+      <div class="image-upload-wrapper" onclick="document.getElementById('leaf-file').click()">
+        <i class="fa-solid fa-cloud-arrow-up"></i>
+        <span>Drag & drop leaf photo here, or <b>browse</b></span>
+        <input type="file" id="leaf-file" name="file" accept="image/*" onchange="previewImage(event)" required>
+      </div>
+
+      <!-- Preview Image Container -->
+      <div id="preview-container" class="image-preview-panel" style="display: none; margin-top: 20px;">
+        <img id="preview-img" src="" alt="Selected leaf preview">
+      </div>
+
+      <button type="submit" class="premium-btn primary" style="width: 100%; margin-top: 20px;">
+        <i class="fa-solid fa-flask"></i> Scan Leaf Image
+      </button>
+    </form>
+  </div>
+
+  <!-- Prediction Results -->
+  <div>
+    {% if prediction %}
+    <div class="premium-card" style="margin-bottom: 24px; background: linear-gradient(135deg, rgba(231, 76, 60, 0.08) 0%, rgba(27, 20, 23, 0.5) 100%); border-color: rgba(231, 76, 60, 0.2);">
+      <h3 style="margin-bottom: 16px; font-weight: 700; color: var(--warning-color);"><i class="fa-solid fa-circle-check"></i> Diagnostic Result</h3>
+      
+      <div style="display: flex; gap: 24px; align-items: center; margin-bottom: 20px;">
+        <img src="{{ prediction.image_path }}" alt="Analyzed Leaf" style="width: 130px; height: 130px; object-fit: cover; border-radius: 12px; border: 1px solid var(--glass-border);">
+        <div>
+          <div style="font-size: 20px; font-weight: 800; margin-bottom: 6px;">
+            Pathogen class: <span style="color: var(--color-text-primary);">{{ prediction.pred_class }}</span>
+          </div>
+          <div style="font-size: 16px; color: var(--color-text-secondary); font-weight: 600;">
+            Confidence score: <span style="color: var(--accent-green);">{{ '{:.2f}'.format(prediction.confidence) }}%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="premium-card" style="text-align: center; padding: 60px 20px; margin-bottom: 24px; color: var(--color-text-secondary);">
+      <i class="fa-solid fa-file-image" style="font-size: 48px; margin-bottom: 16px; display: block; color: var(--glass-border);"></i>
+      Select and upload a leaf photo to diagnose potential crop diseases.
+    </div>
+    {% endif %}
+
+    <!-- Interactive charts -->
+    <div class="premium-card">
+      <h3 style="margin-bottom: 20px; font-weight: 700;"><i class="fa-solid fa-chart-pie"></i> Diagnostic Analytics</h3>
+      
+      <div class="plotly-iframe-grid">
+        <div class="plotly-iframe-card">
+          <h3>🌿 Overall Leaf Health Status</h3>
+          <iframe src="/static/images/healthy_vs_diseased.html"></iframe>
+        </div>
+        <div class="plotly-iframe-card">
+          <h3>🍂 Disease Type Distribution</h3>
+          <iframe src="/static/images/disease_type_distribution.html"></iframe>
+        </div>
+        <div class="plotly-iframe-card">
+          <h3>🤖 Disease Model Accuracy Gauge</h3>
+          <iframe src="/static/images/model_accuracy_gauge.html"></iframe>
+        </div>
+        
+        <!-- Render dynamic overlays if a scan is active -->
+        {% if prediction %}
+        <div class="plotly-iframe-card">
+          <h3>📊 Prediction Confidence Gauge</h3>
+          <iframe src="/static/images/dynamic_visualization_1.html"></iframe>
+        </div>
+        <div class="plotly-iframe-card">
+          <h3>📈 Confidence Bar Chart</h3>
+          <iframe src="/static/images/dynamic_visualization_2.html"></iframe>
+        </div>
+        <div class="plotly-iframe-card">
+          <h3>🥧 Confidence Pie Chart</h3>
+          <iframe src="/static/images/dynamic_visualization_3.html"></iframe>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

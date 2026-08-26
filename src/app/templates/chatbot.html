@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}AI Agricultural Assistant - Smart Farming Decision Support System{% endblock %}
+{% block page_title %}AI Agricultural Assistant{% endblock %}
+
+{% block content %}
+<div class="chat-container">
+  
+  <!-- Chat messages log -->
+  <div class="chat-messages" id="chat-messages-container">
+    <!-- Initial Bot Greeting -->
+    <div class="chat-bubble bot">
+      🌾 <b>Welcome to the Smart Farming AI Assistant!</b><br>
+      Ask me any questions about crop cultivation, seed treatment, pest controls, fertilizers, or farming best practices in Tamil, Hindi, or English!
+    </div>
+  </div>
+
+  <!-- Chat Input form -->
+  <form class="chat-input-bar" id="chat-submit-form" onsubmit="handleChatSubmit(event)">
+    <input type="text" id="chat-input" placeholder="Type your farming query here..." required autocomplete="off">
+    <button type="submit" class="premium-btn primary" style="padding: 10px 24px;">
+      <i class="fa-solid fa-paper-plane"></i> Send
+    </button>
+  </form>
+
+</div>
+{% endblock %}

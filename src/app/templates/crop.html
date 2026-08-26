@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}{{ lang_dict.seed }} - Smart Farming Decision Support System{% endblock %}
+{% block page_title %}{{ lang_dict.seed }}{% endblock %}
+
+{% block content %}
+<!-- Error Alert popup -->
+{% if error %}
+<div class="alert-popup error" style="margin-bottom: 24px;">
+  <i class="fa-solid fa-circle-exclamation"></i>
+  <span>{{ error }}</span>
+</div>
+{% endif %}
+
+<div class="dashboard-grid" style="grid-template-columns: 1fr 2fr; align-items: start;">
+  
+  <!-- Soil Input Form -->
+  <div class="premium-card">
+    <h3 style="margin-bottom: 20px; font-weight: 700;"><i class="fa-solid fa-file-invoice"></i> Enter Farm Metrics</h3>
+    
+    <form method="post" action="/seed_dashboard">
+      <input type="hidden" name="lang" value="{{ lang }}">
+      
+      <div class="form-group">
+        <label for="pH">Soil pH</label>
+        <input type="number" step="0.01" id="pH" name="pH" placeholder="e.g. 6.5" required>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
+        <div class="form-group">
+          <label for="N">Nitrogen (N)</label>
+          <input type="number" step="0.01" id="N" name="N" placeholder="N" required>
+        </div>
+        <div class="form-group">
+          <label for="P">Phosphorus (P)</label>
+          <input type="number" step="0.01" id="P" name="P" placeholder="P" required>
+        </div>
+        <div class="form-group">
+          <label for="K">Potassium (K)</label>
+          <input type="number" step="0.01" id="K" name="K" placeholder="K" required>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="Temp">Temperature (°C)</label>
+        <input type="number" step="0.1" id="Temp" name="Temp" placeholder="e.g. 28.5" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="Rainfall">Rainfall (mm)</label>
+        <input type="number" step="0.1" id="Rainfall" name="Rainfall" placeholder="e.g. 150" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="Humidity">Humidity (%)</label>
+        <input type="number" step="0.1" id="Humidity" name="Humidity" placeholder="e.g. 70" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="Season_Duration">Season Duration (days)</label>
+        <input type="number" step="1" id="Season_Duration" name="Season_Duration" placeholder="e.g. 120" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="Soil_Type">Soil Type</label>
+        <select id="Soil_Type" name="Soil_Type" required>
+          <option value="Loamy">Loamy</option>
+          <option value="Sandy">Sandy</option>
+          <option value="Clay">Clay</option>
+          <option value="Red">Red</option>
+          <option value="Black">Black</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="Region">Region</label>
+        <select id="Region" name="Region" required>
+          <option value="North">North</option>
+          <option value="South">South</option>
+          <option value="East">East</option>
+          <option value="West">West</option>
+          <option value="Central">Central</option>
+        </select>
+      </div>
+      
+      <button type="submit" class="premium-btn primary" style="width: 100%; margin-top: 10px;">
+        <i class="fa-solid fa-calculator"></i> Get Recommendation
+      </button>
+    </form>
+  </div>
+
+  <!-- Recommendation Outcome -->
+  <div>
+    {% if prediction %}
+    <div class="premium-card" style="margin-bottom: 24px; background: linear-gradient(135deg, rgba(46, 204, 113, 0.15) 0%, rgba(27, 20, 23, 0.5) 100%); border-color: rgba(46, 204, 113, 0.3);">
+      <h3 style="margin-bottom: 12px; font-weight: 700; color: var(--accent-green);"><i class="fa-solid fa-circle-check"></i> Recommendation Result</h3>
+      <div style="font-size: 24px; font-weight: 800; margin-bottom: 20px;">
+        Predicted Crop: <span style="color: var(--color-text-primary); text-transform: uppercase;">{{ prediction.pred_crop }}</span>
+      </div>
+      
+      <h4 style="margin-bottom: 12px; font-size: 15px; font-weight: 600; color: var(--color-text-secondary);">Top Recommended Seed Varieties</h4>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        {% for seed, prob in prediction.top_seeds %}
+        <div style="display: flex; justify-content: space-between; padding: 12px 18px; background: rgba(0, 0, 0, 0.2); border-radius: 10px; border: 1px solid var(--glass-border);">
+          <span style="font-weight: 600;">{{ seed }}</span>
+          <span style="color: var(--accent-cyan); font-weight: 600;">{{ prob }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% else %}
+    <div class="premium-card" style="text-align: center; padding: 60px 20px; margin-bottom: 24px; color: var(--color-text-secondary);">
+      <i class="fa-solid fa-calculator" style="font-size: 48px; margin-bottom: 16px; display: block; color: var(--glass-border);"></i>
+      Enter soil variables on the left and submit to view custom seed variety suggestions.
+    </div>
+    {% endif %}
+
+    <!-- Dashboard Interactive Visualizations -->
+    <div class="premium-card">
+      <h3 style="margin-bottom: 20px; font-weight: 700;"><i class="fa-solid fa-chart-pie"></i> Seed Analytics & Visualizations</h3>
+      
+      <div class="plotly-iframe-grid">
+        <div class="plotly-iframe-card">
+          <h3>⚙ Feature Importance for Crop Prediction</h3>
+          <iframe src="/static/images/seed/feature_importance.html"></iframe>
+        </div>
+        <div class="plotly-iframe-card">
+          <h3>🌱 Seed Variety Distribution</h3>
+          <iframe src="/static/images/seed/seed_distribution.html"></iframe>
+        </div>
+        <div class="plotly-iframe-card">
+          <h3>🌾 Crop vs Seed Relationship</h3>
+          <iframe src="/static/images/seed/crop_vs_seed.html"></iframe>
+        </div>
+        <div class="plotly-iframe-card">
+          <h3>🧪 Soil Type vs Seed Variety</h3>
+          <iframe src="/static/images/seed/soil_type_vs_seed.html"></iframe>
+        </div>
+        <div class="plotly-iframe-card">
+          <h3>📈 Expected Yield vs Seed Variety</h3>
+          <iframe src="/static/images/seed/expected_yield.html"></iframe>
+        </div>
+        <div class="plotly-iframe-card">
+          <h3>🧭 Soil Nutrient radar Chart</h3>
+          <iframe src="/static/images/seed/soil_radar.html"></iframe>
+        </div>
+        <div class="plotly-iframe-card" style="grid-column: 1 / -1;">
+          <h3>🔍 Feature Correlation Heatmap</h3>
+          <iframe src="/static/images/seed/correlation_heatmap.html" style="height: 450px;"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

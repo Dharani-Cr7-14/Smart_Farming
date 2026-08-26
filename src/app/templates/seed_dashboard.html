@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🌱 Uzhavan Saathee - Seed Dashboard</title>
+  <title>Smart Farming Decision Support System - Seed Dashboard</title>
   <style>
     body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #0b0c10, #1f2833); color: #fff; margin:0; padding:0; }
     header { background:#45a29e; color:#fff; text-align:center; padding:20px; font-size:24px; font-weight:bold; box-shadow:0 2px 15px rgba(0,0,0,0.5); }
@@ -29,7 +29,7 @@
 </head>
 <body>
 <header>
-  <span id="header-title">🌱 Uzhavan Saathee - Seed Dashboard</span>
+  <span id="header-title">🌱 Smart Farming - Seed Dashboard</span>
   <nav>
     <a href="/" id="home-link">Home</a>
     <a href="/seed_dashboard" id="seed-link">Seed Dashboard</a>
@@ -112,7 +112,7 @@ function changeLanguage(){
   localStorage.setItem('selectedLang', lang);
 
   // Header and nav
-  document.getElementById('header-title').innerText = "🌱 Uzhavan Saathee - Seed Dashboard";
+  document.getElementById('header-title').innerText = "🌱 Smart Farming - Seed Dashboard";
   document.getElementById('home-link').innerText = lang==='en'? "Home": lang==='ta'? "முகப்பு": "होम";
   document.getElementById('seed-link').innerText = lang==='en'? "Seed Dashboard": lang==='ta'? "விதை டாஷ்போர்டு": "बीज डैशबोर्ड";
   document.getElementById('disease-link').innerText = lang==='en'? "Disease Dashboard": lang==='ta'? "நோய் டாஷ்போர்டு": "रोग डैशबोर्ड";

@@ -8,7 +8,7 @@ from pathlib import Path
 ROOT_DIR = Path(__file__).resolve().parents[2]
 
 # Dataset paths
-raw_dataset = os.path.join(ROOT_DIR, "data", "PlantVillage-Dataset")   # <-- updated here
+raw_dataset = os.path.join(ROOT_DIR, "data", "raw", "PlantVillage-Dataset-master", "raw", "color")
 output_dataset = os.path.join(ROOT_DIR, "data", "plant_disease")
 
 # Train/val/test split ratios
@@ -17,13 +17,13 @@ SPLIT_RATIOS = {"train": 0.7, "val": 0.2, "test": 0.1}
 
 def split_dataset(base_dir, output_dir):
     class_indices = {}
+    
+    # Sort folders to ensure deterministic indexing
+    folders = sorted([d for d in os.listdir(base_dir) if os.path.isdir(os.path.join(base_dir, d))])
 
     # Loop through class folders (e.g., Tomato___Early_blight, Strawberry___healthy, etc.)
-    for idx, class_name in enumerate(os.listdir(base_dir)):
+    for idx, class_name in enumerate(folders):
         class_path = os.path.join(base_dir, class_name)
-        if not os.path.isdir(class_path):
-            continue
-
         class_indices[class_name] = idx
         images = os.listdir(class_path)
         random.shuffle(images)
@@ -42,9 +42,11 @@ def split_dataset(base_dir, output_dir):
             split_dir = os.path.join(output_dir, split, class_name)
             os.makedirs(split_dir, exist_ok=True)
             for img in split_images:
-                src = os.path.join(class_path, img)
-                dst = os.path.join(split_dir, img)
-                shutil.copy2(src, dst)
+                src = os.path.abspath(os.path.join(class_path, img))
+                dst = os.path.abspath(os.path.join(split_dir, img))
+                if os.path.exists(dst) or os.path.islink(dst):
+                    os.remove(dst)
+                os.symlink(src, dst)
 
     # Save class-to-index mapping
     with open(os.path.join(output_dir, "class_indices.json"), "w") as f:

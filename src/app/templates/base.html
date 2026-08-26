@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ lang_dict.home_title }} - Smart Farming Decision Support System{% endblock %}</title>
+  <!-- FontAwesome Icons and Stylesheet -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/static/css/style.css">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation Layout -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <i class="fa-solid fa-wheat-awn" style="color: var(--accent-green); font-size: 24px;"></i>
+        <h1>{{ lang_dict.home_title }}</h1>
+      </div>
+      
+      <ul class="sidebar-menu">
+        <li class="sidebar-menu-item {% if active_page == 'dashboard' %}active{% endif %}">
+          <a href="/?lang={{ lang }}">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item {% if active_page == 'crop' %}active{% endif %}">
+          <a href="/seed_dashboard?lang={{ lang }}">
+            <i class="fa-solid fa-seedling"></i>
+            <span>{{ lang_dict.seed }}</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item {% if active_page == 'disease' %}active{% endif %}">
+          <a href="/disease_dashboard?lang={{ lang }}">
+            <i class="fa-solid fa-shrimp"></i> <!-- leaf representation -->
+            <span>{{ lang_dict.disease }}</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item {% if active_page == 'chatbot' %}active{% endif %}">
+          <a href="/chatbot?lang={{ lang }}">
+            <i class="fa-solid fa-robot"></i>
+            <span>AI Assistant</span>
+          </a>
+        </li>
+        <li class="sidebar-menu-item {% if active_page == 'history' %}active{% endif %}">
+          <a href="/history?lang={{ lang }}">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span>Prediction History</span>
+          </a>
+        </li>
+      </ul>
+      
+      <div class="sidebar-footer">
+        {% if user %}
+        <div class="user-profile-badge">
+          <div class="user-avatar">{{ user.username[0] | upper }}</div>
+          <div class="user-info">
+            <div class="user-name">{{ user.username }}</div>
+            <a href="/auth/logout" class="user-logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+          </div>
+        </div>
+        {% else %}
+        <div class="user-profile-badge">
+          <div class="user-info">
+            <a href="/auth/login?lang={{ lang }}" style="color: var(--accent-green); text-decoration: none; font-weight: 600; font-size: 14px;"><i class="fa-solid fa-right-to-bracket"></i> Sign In / Register</a>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </aside>
+
+    <!-- Main Content Panel -->
+    <main class="main-workspace">
+      
+      <!-- Top Navigation Header -->
+      <header class="top-nav">
+        <div class="page-title">
+          <button id="sidebar-toggle" class="premium-btn secondary" style="display: none; padding: 8px 12px; margin-right: 12px;">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <h2>{% block page_title %}Overview{% endblock %}</h2>
+        </div>
+        
+        <div class="nav-actions">
+          <!-- Multilingual Selector -->
+          <div class="select-lang-container">
+            <select id="lang-select" onchange="changeLanguage()">
+              <option value="en">English</option>
+              <option value="ta">தமிழ் (Tamil)</option>
+              <option value="hi">हिन्दी (Hindi)</option>
+            </select>
+          </div>
+        </div>
+      </header>
+      
+      <!-- Active Page Body Block -->
+      <div class="content-body">
+        {% block content %}{% endblock %}
+      </div>
+      
+    </main>
+    
+  </div>
+
+  <script src="/static/js/script.js"></script>
+  <!-- Responsive toggle support -->
+  <style>
+    @media (max-width: 992px) {
+      #sidebar-toggle {
+        display: inline-flex !important;
+      }
+    }
+  </style>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>
