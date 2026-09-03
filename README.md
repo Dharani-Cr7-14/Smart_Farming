@@ -63,7 +63,7 @@ To ensure scientific validity, seed variety recommendation is implemented as a *
 ## 📁 Project Structure
 
 ```text
-uzhavan_saathee/
+smart_farming/
 ├── data/                       # Soil datasets and Excel seed catalogs
 │   └── raw/
 │       ├── Crop_recommendation.csv
