@@ -11,13 +11,16 @@ if BASE_DIR not in sys.path:
 from services.auth_service import get_current_user
 from models.database import get_crop_predictions, get_disease_predictions, get_chat_messages
 from utils.translations import get_lang_dict
-from routes.templates import templates
+from routes.templates import react_shell, templates
 
 router = APIRouter(tags=["history"])
 
 @router.get("/history", response_class=HTMLResponse)
 async def history_get(request: Request, lang: str = "en"):
     """Query logs from SQLite and render the history tables."""
+    shell = react_shell()
+    if shell:
+        return shell
     user = get_current_user(request)
     if not user:
         return RedirectResponse(url="/auth/login?lang=" + lang, status_code=303)

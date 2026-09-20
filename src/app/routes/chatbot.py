@@ -12,13 +12,16 @@ from services.auth_service import get_current_user
 from services.chatbot_service import get_chatbot_reply, CHAT_HISTORY_DB
 from models.database import add_chat_message
 from utils.translations import get_lang_dict
-from routes.templates import templates
+from routes.templates import react_shell, templates
 
 router = APIRouter(tags=["chatbot"])
 
 @router.get("/chatbot", response_class=HTMLResponse)
 async def chatbot_get(request: Request, lang: str = "en"):
     """Render agricultural AI Chat Assistant view."""
+    shell = react_shell()
+    if shell:
+        return shell
     user = get_current_user(request)
     if not user:
         return RedirectResponse(url="/auth/login?lang=" + lang, status_code=303)

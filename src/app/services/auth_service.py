@@ -56,9 +56,9 @@ def get_current_user(request: Request):
         return SESSIONS[session_id]
     return None
 
-def login_farmer(response: Response, username, password):
+def login_farmer(response: Response, username, password, email=None):
     """Authenticate credentials. Stores signed session UUID in httpOnly cookie."""
-    user = authenticate_user(username, password)
+    user = authenticate_user(username, password, email)
     if user:
         session_id = str(uuid.uuid4())
         SESSIONS[session_id] = user
@@ -83,6 +83,6 @@ def logout_farmer(response: Response, request: Request):
             del SESSIONS[session_id]
     response.delete_cookie("session_id", path="/")
 
-def register_farmer(username, password, region=None, language='en'):
+def register_farmer(username, password, region=None, language='en', email=None):
     """Delegate signup request to persistence layer."""
-    return register_user(username, password, region, language)
+    return register_user(username, password, region, language, email)

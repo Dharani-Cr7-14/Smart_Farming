@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request, Form
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 import sys
 import os
 
@@ -12,13 +12,16 @@ from services.auth_service import get_current_user
 from services.crop_service import recommend_seeds, has_crop_models
 from models.database import add_crop_prediction
 from utils.translations import get_lang_dict
-from routes.templates import templates
+from routes.templates import react_shell, templates
 
 router = APIRouter(tags=["crop"])
 
 @router.get("/seed_dashboard", response_class=HTMLResponse)
 async def seed_dashboard_get(request: Request, lang: str = "en"):
     """Render seed recommendation dashboard. Rejection routes back to login on missing session."""
+    shell = react_shell()
+    if shell:
+        return shell
     user = get_current_user(request)
     if not user:
         return RedirectResponse(url="/auth/login", status_code=303)
@@ -58,6 +61,8 @@ async def seed_dashboard_post(
     if not has_crop_models():
         from utils.config import USE_MOCK_MODELS
         error_msg = "Crop/Seed recommendation models are not loaded on server. Please train models first." if USE_MOCK_MODELS else "Prediction model is currently unavailable. Please contact the administrator."
+        if "application/json" in request.headers.get("accept", ""):
+            return JSONResponse({"ok": False, "error": error_msg}, status_code=503)
         return templates.TemplateResponse(
             request=request,
             name="crop.html",
@@ -108,6 +113,8 @@ async def seed_dashboard_post(
             "top_seeds": top_seeds,
             "crop_probs": crop_probs
         }
+        if "application/json" in request.headers.get("accept", ""):
+            return JSONResponse({"ok": True, "prediction": prediction_result})
         return templates.TemplateResponse(
             request=request,
             name="crop.html",
@@ -121,6 +128,8 @@ async def seed_dashboard_post(
             }
         )
     except Exception as e:
+        if "application/json" in request.headers.get("accept", ""):
+            return JSONResponse({"ok": False, "error": f"Error during model prediction: {str(e)}"}, status_code=400)
         return templates.TemplateResponse(
             request=request,
             name="crop.html",

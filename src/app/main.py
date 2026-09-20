@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request
-from fastapi.responses import RedirectResponse, HTMLResponse
+from fastapi.responses import FileResponse, RedirectResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 import os
 import sys
@@ -10,15 +10,19 @@ sys.path.append(BASE_DIR)
 sys.path.append(os.path.abspath(os.path.join(BASE_DIR, "..")))
 
 from routes.templates import templates
-from routes import auth, crop, disease, chatbot, history
+from routes import api, auth, crop, disease, chatbot, history
 from services.auth_service import get_current_user
 from models.database import get_crop_predictions, get_disease_predictions
 from utils.translations import get_lang_dict
 
 app = FastAPI(title="Smart Farming Decision Support System", description="AI-Powered Smart Farming Decision Support System")
+REACT_INDEX = os.path.abspath(os.path.join(BASE_DIR, "..", "..", "dist", "index.html"))
+REACT_ASSETS = os.path.join(os.path.dirname(REACT_INDEX), "assets")
 
 # Mount static folder
 app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
+if os.path.isdir(REACT_ASSETS):
+    app.mount("/assets", StaticFiles(directory=REACT_ASSETS), name="assets")
 
 # Register routers
 app.include_router(auth.router)
@@ -26,10 +30,13 @@ app.include_router(crop.router)
 app.include_router(disease.router)
 app.include_router(chatbot.router)
 app.include_router(history.router)
+app.include_router(api.router)
 
 @app.get("/", response_class=HTMLResponse)
 async def home_get(request: Request, lang: str = "en"):
     """Dashboard homepage. Redirects to login page if user session is invalid."""
+    if os.path.exists(REACT_INDEX):
+        return FileResponse(REACT_INDEX)
     user = get_current_user(request)
     if not user:
         return RedirectResponse(url="/auth/login?lang=" + lang, status_code=303)
@@ -144,3 +151,11 @@ async def model_health():
         "disease_model": disease_status,
         "chatbot": chatbot_status
     }
+
+
+@app.get("/{frontend_path:path}")
+async def react_fallback(frontend_path: str):
+    """Serve the React shell for client-side routes after a production build."""
+    if os.path.exists(REACT_INDEX):
+        return FileResponse(REACT_INDEX)
+    return RedirectResponse(url="/auth/login", status_code=303)

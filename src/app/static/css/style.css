@@ -1,5 +1,5 @@
 /* SMART FARMING DECISION SUPPORT SYSTEM - Modern Glassmorphic Design System */
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700&display=swap');
 
 :root {
   --bg-primary: #08090a;
@@ -15,7 +15,8 @@
   --danger-color: #ff4d4d;
   --warning-color: #f1c40f;
   --sidebar-width: 280px;
-  --font-family: 'Outfit', sans-serif;
+  --font-family: 'Manrope', sans-serif;
+  --font-display: 'Sora', sans-serif;
   --transition-speed: 0.3s;
   --shadow-premium: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
@@ -36,6 +37,43 @@ body {
   min-height: 100vh;
   display: flex;
   overflow-x: hidden;
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-kerning: normal;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.premium-btn,
+.sidebar-header h1,
+.page-title h2,
+.seed-empty-kicker,
+.disease-empty-kicker {
+  font-family: var(--font-display);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: 1.18;
+  letter-spacing: 0;
+  font-weight: 600;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
 }
 
 /* Master Layout Structure */
@@ -76,7 +114,7 @@ body {
   background: linear-gradient(135deg, var(--color-text-primary), var(--accent-green));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  letter-spacing: 0.5px;
+  letter-spacing: 0;
 }
 
 .sidebar-menu {
@@ -97,8 +135,9 @@ body {
   color: var(--color-text-secondary);
   text-decoration: none;
   border-radius: 12px;
-  font-weight: 500;
-  font-size: 15px;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.01em;
   transition: all var(--transition-speed);
 }
 
@@ -189,8 +228,9 @@ body {
 }
 
 .page-title h2 {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .nav-actions {
@@ -308,7 +348,9 @@ body {
   border-radius: 12px;
   border: none;
   font-weight: 600;
-  font-size: 15px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  letter-spacing: 0.01em;
   cursor: pointer;
   transition: all var(--transition-speed);
   text-decoration: none;
@@ -600,7 +642,257 @@ body {
   color: #a3f7bf;
 }
 
-/* Plotly iframe dashboards */
+/* Seed recommendation layout */
+.seed-dashboard-grid {
+  grid-template-columns: minmax(360px, 0.95fr) minmax(420px, 1.05fr);
+  align-items: start;
+}
+
+.seed-form-card {
+  position: sticky;
+  top: 24px;
+}
+
+.seed-form-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.seed-form-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.seed-form-header h3 {
+  margin-bottom: 3px;
+  font-weight: 700;
+}
+
+.seed-form-header p {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+.seed-section-icon,
+.seed-empty-icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: rgba(46, 204, 113, 0.12);
+  color: var(--accent-green);
+  flex: 0 0 auto;
+}
+
+.seed-nutrient-grid,
+.seed-select-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.seed-select-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.seed-form-card .form-group {
+  margin-bottom: 10px;
+}
+
+.seed-form-card .premium-btn {
+  min-height: 48px;
+  margin-top: 8px !important;
+}
+
+.seed-empty-state {
+  min-height: 720px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 64px 48px;
+  color: var(--color-text-secondary);
+  background: linear-gradient(145deg, rgba(46, 204, 113, 0.10), rgba(17, 20, 23, 0.76) 54%);
+  border-color: rgba(46, 204, 113, 0.18);
+}
+
+.seed-empty-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  margin-bottom: 22px;
+  font-size: 26px;
+  box-shadow: 0 12px 30px rgba(46, 204, 113, 0.12);
+}
+
+.seed-empty-kicker {
+  color: var(--accent-green);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  margin-bottom: 10px;
+}
+
+.seed-empty-state h3 {
+  color: var(--color-text-primary);
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.seed-empty-state p {
+  max-width: 360px;
+  line-height: 1.6;
+}
+
+.seed-empty-points {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 18px;
+  max-width: 420px;
+  margin-top: 28px;
+  color: var(--color-text-primary);
+  font-size: 12px;
+}
+
+.seed-empty-points i {
+  color: var(--accent-green);
+  margin-right: 5px;
+}
+
+.seed-guide {
+  position: relative;
+  width: min(100%, 430px);
+  margin-top: auto;
+  padding-top: 30px;
+  text-align: left;
+}
+
+.seed-guide-line {
+  position: absolute;
+  top: 43px;
+  bottom: 35px;
+  left: 17px;
+  width: 1px;
+  background: rgba(46, 204, 113, 0.28);
+}
+
+.seed-guide-item {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.seed-guide-item:last-child {
+  margin-bottom: 0;
+}
+
+.seed-guide-number {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 35px;
+  height: 35px;
+  flex: 0 0 35px;
+  border: 1px solid rgba(46, 204, 113, 0.35);
+  border-radius: 50%;
+  background: #111417;
+  color: var(--accent-green);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.seed-guide-item strong,
+.seed-guide-item small {
+  display: block;
+}
+
+.seed-guide-item strong {
+  margin: 2px 0 4px;
+  color: var(--color-text-primary);
+  font-size: 14px;
+}
+
+.seed-guide-item small {
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.seed-outcome {
+  min-height: 100%;
+}
+
+.seed-result-card {
+  height: 100%;
+  background: linear-gradient(145deg, rgba(46, 204, 113, 0.14), rgba(27, 20, 23, 0.65));
+  border-color: rgba(46, 204, 113, 0.3);
+}
+
+.seed-result-heading {
+  margin-bottom: 20px;
+  color: var(--accent-green);
+}
+
+.seed-crop-name {
+  font-size: 26px;
+  font-weight: 800;
+  margin-bottom: 28px;
+}
+
+.seed-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.seed-list-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  border: 1px solid var(--glass-border);
+}
+
+.seed-list-row span:last-child {
+  color: var(--accent-cyan);
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .seed-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .seed-form-card {
+    position: static;
+  }
+
+  .seed-empty-state {
+    min-height: 520px;
+    padding: 48px 28px;
+  }
+}
+
+@media (max-width: 560px) {
+  .seed-nutrient-grid,
+  .seed-select-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Plotly iframe dashboards used by the disease dashboard */
 .plotly-iframe-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -650,6 +942,231 @@ body {
 .image-upload-wrapper:hover {
   border-color: var(--accent-green);
   background: rgba(46, 204, 113, 0.02);
+}
+
+.disease-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.disease-section-heading h3 {
+  margin-bottom: 3px;
+}
+
+.disease-section-heading p {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+.disease-section-icon {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: rgba(0, 242, 254, 0.1);
+  color: var(--accent-cyan);
+}
+
+.image-upload-wrapper strong {
+  font-size: 14px;
+  color: var(--color-text-primary);
+}
+
+.image-upload-wrapper small {
+  color: var(--color-text-secondary);
+  font-size: 11px;
+}
+
+.image-upload-wrapper.is-dragging {
+  border-color: var(--accent-green);
+  background: rgba(46, 204, 113, 0.1);
+  transform: translateY(-2px);
+}
+
+.file-details {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+}
+
+.file-details span:first-child {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.file-details strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-text-primary);
+}
+
+.file-details i {
+  color: var(--accent-green);
+}
+
+.clear-file-btn {
+  margin-top: 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.clear-file-btn:hover {
+  color: var(--danger-color);
+}
+
+.scan-tips {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid var(--glass-border);
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.scan-tips-label {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+.scan-tips-label i {
+  margin-right: 6px;
+  color: var(--warning-color);
+}
+
+.disease-result-card {
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, rgba(231, 76, 60, 0.08) 0%, rgba(27, 20, 23, 0.5) 100%);
+  border-color: rgba(231, 76, 60, 0.2);
+}
+
+.disease-guidance-card {
+  min-height: 280px;
+  background: linear-gradient(145deg, rgba(0, 242, 254, 0.06), rgba(17, 20, 23, 0.8));
+}
+
+.disease-guidance-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 26px;
+}
+
+.disease-guidance-header h3 {
+  margin-bottom: 3px;
+}
+
+.disease-guidance-header p {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+.disease-guidance-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.disease-guidance-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  background: rgba(8, 9, 10, 0.28);
+}
+
+.disease-guidance-number {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  border-radius: 50%;
+  background: rgba(0, 242, 254, 0.1);
+  color: var(--accent-cyan);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.disease-guidance-item strong {
+  display: block;
+  margin: 2px 0 5px;
+  font-size: 13px;
+}
+
+.disease-guidance-item p {
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.disease-supported-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--glass-border);
+  color: var(--color-text-secondary);
+  font-size: 12px;
+}
+
+.disease-supported-note i {
+  color: var(--accent-cyan);
+}
+
+.disease-result-heading {
+  margin-bottom: 16px;
+  color: var(--warning-color);
+}
+
+.confidence-label {
+  font-size: 16px;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.confidence-meter {
+  width: min(280px, 100%);
+  height: 7px;
+  margin-top: 12px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.confidence-meter span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent-green), var(--accent-cyan));
+}
+
+@media (max-width: 900px) {
+  .disease-guidance-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .image-upload-wrapper i {

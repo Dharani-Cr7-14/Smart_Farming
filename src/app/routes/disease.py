@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request, Form, UploadFile, File
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 import shutil
 import os
 import sys
@@ -13,13 +13,16 @@ from services.auth_service import get_current_user
 from services.disease_service import run_disease_inference, generate_disease_visualizations, has_disease_model
 from models.database import add_disease_prediction
 from utils.translations import get_lang_dict
-from routes.templates import templates
+from routes.templates import react_shell, templates
 
 router = APIRouter(tags=["disease"])
 
 @router.get("/disease_dashboard", response_class=HTMLResponse)
 async def disease_dashboard_get(request: Request, lang: str = "en"):
     """Render leaf disease detector view. Verification redirects to login if unauthenticated."""
+    shell = react_shell()
+    if shell:
+        return shell
     user = get_current_user(request)
     if not user:
         return RedirectResponse(url="/auth/login", status_code=303)
@@ -46,6 +49,8 @@ async def disease_dashboard_post(request: Request, file: UploadFile = File(...),
     if not has_disease_model():
         from utils.config import USE_MOCK_MODELS
         error_msg = "Plant disease classification model is not loaded. Ensure models are trained." if USE_MOCK_MODELS else "Prediction model is currently unavailable. Please contact the administrator."
+        if "application/json" in request.headers.get("accept", ""):
+            return JSONResponse({"ok": False, "error": error_msg}, status_code=503)
         return templates.TemplateResponse(
             request=request,
             name="disease.html",
@@ -87,6 +92,8 @@ async def disease_dashboard_post(request: Request, file: UploadFile = File(...),
             "confidence": confidence,
             "image_path": f"/static/uploads/{file.filename}"
         }
+        if "application/json" in request.headers.get("accept", ""):
+            return JSONResponse({"ok": True, "prediction": prediction_result})
         
         return templates.TemplateResponse(
             request=request,
@@ -101,6 +108,8 @@ async def disease_dashboard_post(request: Request, file: UploadFile = File(...),
             }
         )
     except Exception as e:
+        if "application/json" in request.headers.get("accept", ""):
+            return JSONResponse({"ok": False, "error": f"Image processing failed: {str(e)}"}, status_code=400)
         return templates.TemplateResponse(
             request=request,
             name="disease.html",
