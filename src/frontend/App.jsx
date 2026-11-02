@@ -95,7 +95,7 @@ function Dashboard({ user, data, navigate, weather, weatherError, refreshWeather
     <section className="dashboard-stat-grid" aria-label="Farm overview">
       <StatCard icon="fa-temperature-three-quarters" label="Temperature" value={temperature} note={weather ? weatherDescription(weather.weather_code) : weatherNote} tone="green" />
       <StatCard icon="fa-droplet" label="Humidity" value={humidity} note={weather ? "Live reading for your location" : weatherNote} tone="cyan" />
-      <StatCard icon="fa-cloud-rain" label="Rainfall (30 days)" value={rainfall} note={weather ? "Total for the last 30 days" : weatherNote} tone="yellow" />
+      <StatCard icon="fa-cloud-rain" label="Rainfall (30 days)" value={rainfall} note={weather ? (weather.rainfall_history_available ? "Total for the last 30 days" : "Historical rainfall unavailable") : weatherNote} tone="yellow" />
       <StatCard icon="fa-chart-line" label="Saved insights" value={cropCount + diseaseCount} note={`${cropCount} crop · ${diseaseCount} disease`} tone="pink" />
     </section>
 
