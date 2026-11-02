@@ -158,6 +158,19 @@ cp .env.example .env
 docker compose up --build
 ```
 
+Open `http://localhost:8080` for the latest React UI. The backend image also
+builds and serves the same React UI at `http://localhost:8000`, so rebuild the
+images after frontend changes:
+
+```bash
+docker compose down
+docker compose build --no-cache frontend backend
+docker compose up
+```
+
+If an old page remains visible, use a hard refresh (`Cmd+Shift+R` on macOS)
+or an incognito window. Do not open the old `dist/index.html` file directly.
+
 The backend container mounts `models/` and `data/plant_disease/` read-only so
 large model artifacts do not need to be committed to Git. Keep these artifacts
 in the private storage mechanism provided by the hosting platform (or attach a
