@@ -171,6 +171,20 @@ docker compose up
 If an old page remains visible, use a hard refresh (`Cmd+Shift+R` on macOS)
 or an incognito window. Do not open the old `dist/index.html` file directly.
 
+The Compose file includes an Ollama service for the chatbot. After the
+containers start, download the configured model once:
+
+```bash
+docker compose exec ollama ollama pull llama3:latest
+```
+
+Then verify chatbot readiness at
+`http://localhost:8000/model_health`; `"chatbot": "READY"` means the model is
+available. The browser location feature requires permission and works on
+`localhost` or HTTPS. If permission is denied or weather is unavailable, the
+Crop & Seeds form remains usable with manually entered temperature, rainfall,
+and humidity values.
+
 The backend container mounts `models/` and `data/plant_disease/` read-only so
 large model artifacts do not need to be committed to Git. Keep these artifacts
 in the private storage mechanism provided by the hosting platform (or attach a

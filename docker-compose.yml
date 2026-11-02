@@ -9,7 +9,7 @@ services:
       COOKIE_SAMESITE: ${COOKIE_SAMESITE:-lax}
       FRONTEND_ORIGINS: ${FRONTEND_ORIGINS:-http://localhost:8080}
       DB_PATH: /app/runtime/uzhavan_saathee.db
-      OLLAMA_HOST: ${OLLAMA_HOST:-http://ollama:11434}
+      OLLAMA_HOST: http://ollama:11434
       OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3:latest}
       USE_MOCK_MODELS: ${USE_MOCK_MODELS:-false}
     ports:
@@ -25,6 +25,14 @@ services:
       timeout: 5s
       retries: 3
 
+  ollama:
+    image: ollama/ollama:latest
+    command: ["serve"]
+    volumes:
+      - ollama-data:/root/.ollama
+    expose:
+      - "11434"
+
   frontend:
     build:
       context: .
@@ -39,3 +47,4 @@ services:
 
 volumes:
   app-data:
+  ollama-data:
