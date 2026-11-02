@@ -63,8 +63,6 @@
     <input type="number" step="0.1" id="Rainfall" name="Rainfall" required>
     <label for="Humidity" id="label-Humidity">Humidity (%)</label>
     <input type="number" step="0.1" id="Humidity" name="Humidity" required>
-    <label for="Season_Duration" id="label-Season">Season Duration (days)</label>
-    <input type="number" step="1" id="Season_Duration" name="Season_Duration" required>
     <label for="Soil_Type" id="label-Soil">Soil Type</label>
     <select id="Soil_Type" name="Soil_Type" required></select>
     <label for="Region" id="label-Region">Region</label>
@@ -102,9 +100,9 @@
 function openNewTab(url){ window.open(url, "_blank"); }
 
 const translations = {
-  en:{formTitle:"🧑‍🌾 Enter Farm Details", labels:["Soil pH","Nitrogen (N)","Phosphorus (P)","Potassium (K)","Temperature (°C)","Rainfall (mm)","Humidity (%)","Season Duration (days)","Soil Type","Region"], soilOptions:["--Select Soil Type--","Loamy","Sandy","Clay","Red","Black"], regionOptions:["--Select Region--","North","South","East","West","Central"], submit:"🔍 Get Seed Recommendation", predTitle:"🌱 Predicted Crop: ", topSeeds:"Top Recommended Seeds", dashboardTitle:"📊 Seed Recommendation Visualizations", chartTitles:["⚙ Feature Importance","🌱 Seed Variety Distribution","🌾 Crop vs Seed Relationship","🧪 Soil Type vs Seed Variety","📈 Expected Yield vs Seed Variety","🧭 Soil Nutrient Radar","🔍 Feature Correlation Heatmap"]},
-  ta:{formTitle:"🧑‍🌾 பண்ணை விவரங்களை உள்ளிடவும்", labels:["மண் pH","நைட்ரஜன் (N)","பாஸ்பரஸ் (P)","பொட்டாசியம் (K)","வெப்பநிலை (°C)","மழை (மிமீ)","சோலை (Humidity %)","பசுமை காலம் (நாட்கள்)","மண் வகை","மண்டலம்"], soilOptions:["--மண் வகையை தேர்ந்தெடுக்கவும்--","மண் (Loamy)","மணல்கல் (Sandy)","களிமண் (Clay)","சிவப்பு (Red)","கருப்பு (Black)"], regionOptions:["--மண்டலத்தை தேர்ந்தெடுக்கவும்--","வடக்கு","தெற்கு","கிழக்கு","மேற்கு","மத்திய"], submit:"🔍 விதை பரிந்துரை பெறுக", predTitle:"🌱 கணிக்கப்பட்ட பயிர்: ", topSeeds:"முக்கிய பரிந்துரைக்கப்பட்ட விதைகள்", dashboardTitle:"📊 விதை பரிந்துரை காட்சிப்படுத்தல்கள்", chartTitles:["⚙ அம்ச முக்கியத்துவம்","🌱 விதை வகை விநியோகம்","🌾 பயிர் vs விதை உறவு","🧪 மண் வகை vs விதை","📈 எதிர்பார்க்கப்படும் உற்பத்தி vs விதை","🧭 மண் ஊட்டச்சத்து ராடார்","🔍 அம்ச உறவு ஹீட்மேப்"]},
-  hi:{formTitle:"🧑‍🌾 खेत विवरण दर्ज करें", labels:["मिट्टी pH","नाइट्रोजन (N)","फॉस्फोरस (P)","पोटैशियम (K)","तापमान (°C)","वर्षा (मिमी)","आर्द्रता (%)","मौसमी अवधि (दिन)","मिट्टी प्रकार","क्षेत्र"], soilOptions:["--मिट्टी प्रकार चुनें--","दोमट (Loamy)","रेतीली (Sandy)","मिट्टी (Clay)","लाल (Red)","काला (Black)"], regionOptions:["--क्षेत्र चुनें--","उत्तर","दक्षिण","पूर्व","पश्चिम","केंद्र"], submit:"🔍 बीज सिफ़ारिश प्राप्त करें", predTitle:"🌱 भविष्यवाणी फसल: ", topSeeds:"शीर्ष अनुशंसित बीज", dashboardTitle:"📊 बीज सिफ़ारिश विज़ुअलाइज़ेशन", chartTitles:["⚙ फीचर महत्व","🌱 बीज विविधता वितरण","🌾 फसल बनाम बीज संबंध","🧪 मिट्टी प्रकार बनाम बीज","📈 अपेक्षित उत्पादन बनाम बीज","🧭 मिट्टी पोषण रडार","🔍 फीचर सहसंबंध हीटमैप"]}
+  en:{formTitle:"🧑‍🌾 Enter Farm Details", labels:["Soil pH","Nitrogen (N)","Phosphorus (P)","Potassium (K)","Temperature (°C)","Rainfall (mm)","Humidity (%)","Soil Type","Region"], soilOptions:["--Select Soil Type--","Loamy","Sandy","Clay","Red","Black"], regionOptions:["--Select Region--","North","South","East","West","Central"], submit:"🔍 Get Seed Recommendation", predTitle:"🌱 Predicted Crop: ", topSeeds:"Top Recommended Seeds", dashboardTitle:"📊 Seed Recommendation Visualizations", chartTitles:["⚙ Feature Importance","🌱 Seed Variety Distribution","🌾 Crop vs Seed Relationship","🧪 Soil Type vs Seed Variety","📈 Expected Yield vs Seed Variety","🧭 Soil Nutrient Radar","🔍 Feature Correlation Heatmap"]},
+  ta:{formTitle:"🧑‍🌾 பண்ணை விவரங்களை உள்ளிடவும்", labels:["மண் pH","நைட்ரஜன் (N)","பாஸ்பரஸ் (P)","பொட்டாசியம் (K)","வெப்பநிலை (°C)","மழை (மிமீ)","சோலை (Humidity %)","மண் வகை","மண்டலம்"], soilOptions:["--மண் வகையை தேர்ந்தெடுக்கவும்--","மண் (Loamy)","மணல்கல் (Sandy)","களிமண் (Clay)","சிவப்பு (Red)","கருப்பு (Black)"], regionOptions:["--மண்டலத்தை தேர்ந்தெடுக்கவும்--","வடக்கு","தெற்கு","கிழக்கு","மேற்கு","மத்திய"], submit:"🔍 விதை பரிந்துரை பெறுக", predTitle:"🌱 கணிக்கப்பட்ட பயிர்: ", topSeeds:"முக்கிய பரிந்துரைக்கப்பட்ட விதைகள்", dashboardTitle:"📊 விதை பரிந்துரை காட்சிப்படுத்தல்கள்", chartTitles:["⚙ அம்ச முக்கியத்துவம்","🌱 விதை வகை விநியோகம்","🌾 பயிர் vs விதை உறவு","🧪 மண் வகை vs விதை","📈 எதிர்பார்க்கப்படும் உற்பத்தி vs விதை","🧭 மண் ஊட்டச்சத்து ராடார்","🔍 அம்ச உறவு ஹீட்மேப்"]},
+  hi:{formTitle:"🧑‍🌾 खेत विवरण दर्ज करें", labels:["मिट्टी pH","नाइट्रोजन (N)","फॉस्फोरस (P)","पोटैशियम (K)","तापमान (°C)","वर्षा (मिमी)","आर्द्रता (%)","मिट्टी प्रकार","क्षेत्र"], soilOptions:["--मिट्टी प्रकार चुनें--","दोमट (Loamy)","रेतीली (Sandy)","मिट्टी (Clay)","लाल (Red)","काला (Black)"], regionOptions:["--क्षेत्र चुनें--","उत्तर","दक्षिण","पूर्व","पश्चिम","केंद्र"], submit:"🔍 बीज सिफ़ारिश प्राप्त करें", predTitle:"🌱 भविष्यवाणी फसल: ", topSeeds:"शीर्ष अनुशंसित बीज", dashboardTitle:"📊 बीज सिफ़ारिश विज़ुअलाइज़ेशन", chartTitles:["⚙ फीचर महत्व","🌱 बीज विविधता वितरण","🌾 फसल बनाम बीज संबंध","🧪 मिट्टी प्रकार बनाम बीज","📈 अपेक्षित उत्पादन बनाम बीज","🧭 मिट्टी पोषण रडार","🔍 फीचर सहसंबंध हीटमैप"]}
 };
 
 function changeLanguage(){
@@ -119,7 +117,7 @@ function changeLanguage(){
 
   // Form labels & selects
   document.getElementById('form-title').innerText = translations[lang].formTitle;
-  ["label-pH","label-N","label-P","label-K","label-Temp","label-Rainfall","label-Humidity","label-Season","label-Soil","label-Region"].forEach((id,i)=>{
+  ["label-pH","label-N","label-P","label-K","label-Temp","label-Rainfall","label-Humidity","label-Soil","label-Region"].forEach((id,i)=>{
     document.getElementById(id).innerText = translations[lang].labels[i];
   });
   const soilSelect = document.getElementById('Soil_Type');

@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse, RedirectResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.middleware.cors import CORSMiddleware
 import os
 import sys
 
@@ -14,8 +15,17 @@ from routes import api, auth, crop, disease, chatbot, history
 from services.auth_service import get_current_user
 from models.database import get_crop_predictions, get_disease_predictions
 from utils.translations import get_lang_dict
+from utils.config import FRONTEND_ORIGINS
 
 app = FastAPI(title="Smart Farming Decision Support System", description="AI-Powered Smart Farming Decision Support System")
+if FRONTEND_ORIGINS:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=FRONTEND_ORIGINS,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 REACT_INDEX = os.path.abspath(os.path.join(BASE_DIR, "..", "..", "dist", "index.html"))
 REACT_ASSETS = os.path.join(os.path.dirname(REACT_INDEX), "assets")
 

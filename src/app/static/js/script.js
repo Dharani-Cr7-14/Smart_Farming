@@ -42,13 +42,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// File input image preview
+// File input image preview and upload state
 function previewImage(event) {
     const fileInput = event.target;
     const previewContainer = document.getElementById("preview-container");
     const previewImg = document.getElementById("preview-img");
+    const fileDetails = document.getElementById("file-details");
+    const fileName = document.getElementById("file-name");
+    const fileSize = document.getElementById("file-size");
+    const clearFile = document.getElementById("clear-file");
+    const file = fileInput.files && fileInput.files[0];
     
-    if (fileInput.files && fileInput.files[0]) {
+    if (file) {
         const reader = new FileReader();
         reader.onload = function(e) {
             if (previewImg) {
@@ -57,10 +62,63 @@ function previewImage(event) {
             if (previewContainer) {
                 previewContainer.style.display = "block";
             }
+            if (fileDetails) fileDetails.hidden = false;
+            if (fileName) fileName.textContent = file.name;
+            if (fileSize) fileSize.textContent = formatFileSize(file.size);
+            if (clearFile) clearFile.hidden = false;
         };
-        reader.readAsDataURL(fileInput.files[0]);
+        reader.readAsDataURL(file);
     }
 }
+
+function formatFileSize(bytes) {
+    if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function clearSelectedImage() {
+    const fileInput = document.getElementById("leaf-file");
+    const previewContainer = document.getElementById("preview-container");
+    const previewImg = document.getElementById("preview-img");
+    const fileDetails = document.getElementById("file-details");
+    const clearFile = document.getElementById("clear-file");
+    if (fileInput) fileInput.value = "";
+    if (previewImg) previewImg.src = "";
+    if (previewContainer) previewContainer.style.display = "none";
+    if (fileDetails) fileDetails.hidden = true;
+    if (clearFile) clearFile.hidden = true;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const dropzone = document.getElementById("leaf-dropzone");
+    const fileInput = document.getElementById("leaf-file");
+    const clearFile = document.getElementById("clear-file");
+    if (!dropzone || !fileInput) return;
+
+    ["dragenter", "dragover"].forEach((eventName) => {
+        dropzone.addEventListener(eventName, (event) => {
+            event.preventDefault();
+            dropzone.classList.add("is-dragging");
+        });
+    });
+    ["dragleave", "drop"].forEach((eventName) => {
+        dropzone.addEventListener(eventName, (event) => {
+            event.preventDefault();
+            dropzone.classList.remove("is-dragging");
+        });
+    });
+    dropzone.addEventListener("drop", (event) => {
+        const files = event.dataTransfer.files;
+        if (files.length) {
+            fileInput.files = files;
+            previewImage({ target: fileInput });
+        }
+    });
+    dropzone.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") fileInput.click();
+    });
+    if (clearFile) clearFile.addEventListener("click", clearSelectedImage);
+});
 
 // Chatbot messages submit handler
 async function handleChatSubmit(event) {

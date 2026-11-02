@@ -3,6 +3,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 venv/
+.venv/
+.python-version
 .env
 
 # Models and Data
@@ -25,4 +27,8 @@ src/app/static/images/dynamic_visualization_*.html
 # Large project structure files
 project_structure.txt
 disease_train_env/
+node_modules/
+dist/
+*.log
 *.db
+.DS_Store

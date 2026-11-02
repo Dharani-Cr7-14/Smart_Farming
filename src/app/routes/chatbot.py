@@ -1,3 +1,5 @@
+import asyncio
+
 from fastapi import APIRouter, Request, Form
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 import sys
@@ -37,22 +39,26 @@ async def chatbot_message_post(request: Request, user_message: str = Form(...), 
     
     user_id = user['id']
     
-    # 1. Fetch user's conversation history from CHAT_HISTORY_DB (limited to last 6 messages)
+    # Keep the prompt small so each response starts and completes faster.
     history = CHAT_HISTORY_DB.get(user_id, [])
-    history = history[-6:]
-    
-    # 2. Get AI reply
-    reply = get_chatbot_reply(user_message, lang, history)
-    
-    # 3. Only append and log if reply was successfully generated (no offline/connection errors)
+    history = history[-4:]
+
+    # Save the query before inference so it survives immediate navigation.
+    add_chat_message(user_id, "user", user_message, lang)
+
+    # Keep the event loop responsive while the local model generates a reply.
+    reply = await asyncio.to_thread(get_chatbot_reply, user_message, lang, history)
+
+    # Persist every exchange so navigation or a temporary model failure does
+    # not make the user's query disappear from history.
+    if not reply:
+        reply = "Sorry, no response was generated."
+
     if not reply.startswith("Error:"):
-        # Append exchange to memory
         history.append({"role": "user", "content": user_message})
         history.append({"role": "assistant", "content": reply})
-        CHAT_HISTORY_DB[user_id] = history[-6:]
-        
-        # Log to database
-        add_chat_message(user_id, "user", user_message, lang)
-        add_chat_message(user_id, "assistant", reply, lang)
+        CHAT_HISTORY_DB[user_id] = history[-4:]
+
+    add_chat_message(user_id, "assistant", reply, lang)
         
     return JSONResponse({"reply": reply})

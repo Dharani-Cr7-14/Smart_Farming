@@ -48,6 +48,10 @@
         <label for="login-password"><i class="fa-solid fa-lock"></i> Password</label>
         <input type="password" id="login-password" name="password" placeholder="Enter password" required>
       </div>
+      <div class="form-group">
+        <label for="login-email"><i class="fa-solid fa-envelope"></i> Email Address</label>
+        <input type="email" id="login-email" name="email" placeholder="farmer@example.com" required>
+      </div>
       <button type="submit" class="premium-btn primary" style="width: 100%; margin-top: 10px;">
         <i class="fa-solid fa-right-to-bracket"></i> Sign In
       </button>
@@ -57,12 +61,16 @@
     <form id="register-form" method="post" action="/auth/register" style="display: none;">
       <input type="hidden" name="lang" value="{{ lang }}">
       <div class="form-group">
-        <label for="reg-username"><i class="fa-solid fa-user-plus"></i> Choose Username</label>
-        <input type="text" id="reg-username" name="username" placeholder="Choose username" required>
+        <label for="reg-username"><i class="fa-solid fa-user-plus"></i> Enter Username</label>
+        <input type="text" id="reg-username" name="username" placeholder="Enter username" required>
       </div>
       <div class="form-group">
         <label for="reg-password"><i class="fa-solid fa-lock"></i> Password</label>
         <input type="password" id="reg-password" name="password" placeholder="Choose password" required>
+      </div>
+      <div class="form-group">
+        <label for="reg-email"><i class="fa-solid fa-envelope"></i> Email Address</label>
+        <input type="email" id="reg-email" name="email" placeholder="farmer@example.com" required>
       </div>
       <div class="form-group">
         <label for="reg-region"><i class="fa-solid fa-map-location-dot"></i> Farming Region</label>

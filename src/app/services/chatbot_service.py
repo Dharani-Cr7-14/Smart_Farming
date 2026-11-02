@@ -22,9 +22,9 @@ except Exception as e:
 CHAT_HISTORY_DB = {}
 
 SYSTEM_PROMPT_TEMPLATES = {
-    "en": "You are a professional agricultural assistant for the 'Smart Farming Decision Support System'. Your role is to provide farmers with clear, practical, and accurate advice on crops, soil, pest controls, fertilizers, and general farming practices. Avoid inventing facts. If a question is outside agriculture, politely explain that you are designed primarily to assist with agricultural and farming queries. Answer strictly in English.",
-    "ta": "You are a professional agricultural assistant for the 'Smart Farming Decision Support System'. Your role is to provide farmers with clear, practical, and accurate advice on crops, soil, pest controls, fertilizers, and general farming practices. Avoid inventing facts. If a question is outside agriculture, politely explain that you are designed primarily to assist with agricultural and farming queries. Answer strictly in Tamil (தமிழ்).",
-    "hi": "You are a professional agricultural assistant for the 'Smart Farming Decision Support System'. Your role is to provide farmers with clear, practical, and accurate advice on crops, soil, pest controls, fertilizers, and general farming practices. Avoid inventing facts. If a question is outside agriculture, politely explain that you are designed primarily to assist with agricultural and farming queries. Answer strictly in Hindi (हिंदी)."
+    "en": "You are a concise agricultural assistant. Give practical, accurate advice about crops, soil, pests, fertilizers, and farming. Do not invent facts. For non-agricultural questions, say you focus on farming. Reply only in English and keep answers under 120 words.",
+    "ta": "நீங்கள் ஒரு சுருக்கமான விவசாய உதவியாளர். பயிர்கள், மண், பூச்சிகள், உரங்கள் மற்றும் விவசாயம் பற்றி நடைமுறை, துல்லியமான ஆலோசனை வழங்குங்கள். தகவல்களை உருவாக்காதீர்கள். விவசாயம் சாராத கேள்விகளுக்கு, நீங்கள் விவசாயத்தில் கவனம் செலுத்துகிறீர்கள் என்று கூறுங்கள். தமிழில் மட்டும் 120 சொற்களுக்குள் பதிலளிக்கவும்.",
+    "hi": "आप एक संक्षिप्त कृषि सहायक हैं। फसलों, मिट्टी, कीटों, उर्वरकों और खेती पर व्यावहारिक, सटीक सलाह दें। तथ्य न गढ़ें। गैर-कृषि प्रश्नों पर कहें कि आपका ध्यान खेती पर है। केवल हिंदी में 120 शब्दों के अंदर उत्तर दें।"
 }
 
 def get_chatbot_reply(user_message: str, lang: str = "en", conversation_history: list = None) -> str:
@@ -45,7 +45,13 @@ def get_chatbot_reply(user_message: str, lang: str = "en", conversation_history:
     try:
         response = ollama_client.chat(
             model=OLLAMA_MODEL,
-            messages=messages
+            messages=messages,
+            options={
+                "num_ctx": 2048,
+                "num_predict": 128,
+                "temperature": 0.1,
+            },
+            keep_alive="10m",
         )
         if response and response.message:
             return response.message.content

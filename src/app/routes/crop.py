@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Request, Form
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi import APIRouter, File, Form, Request, UploadFile
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
 import sys
 import os
 
@@ -13,8 +13,34 @@ from services.crop_service import recommend_seeds, has_crop_models
 from models.database import add_crop_prediction
 from utils.translations import get_lang_dict
 from routes.templates import react_shell, templates
+from services.soil_report_service import SoilReportError, extract_soil_report
+from services.crop_image_service import find_crop_image
 
 router = APIRouter(tags=["crop"])
+DEFAULT_SEASON_DURATION = 120
+
+
+@router.get("/api/crop-image")
+async def crop_image(crop: str):
+    image_path = find_crop_image(crop)
+    if not image_path:
+        return JSONResponse({"error": "No local crop image found."}, status_code=404)
+    return FileResponse(image_path)
+
+
+@router.post("/api/soil-report")
+async def soil_report(request: Request, file: UploadFile = File(...)):
+    if not get_current_user(request):
+        return JSONResponse({"error": "Session expired"}, status_code=401)
+    if file.content_type not in ("application/pdf", "application/octet-stream"):
+        return JSONResponse({"error": "Please upload a PDF soil report."}, status_code=415)
+    contents = await file.read()
+    if len(contents) > 10 * 1024 * 1024:
+        return JSONResponse({"error": "The soil report must be 10 MB or smaller."}, status_code=413)
+    try:
+        return {"ok": True, "report": extract_soil_report(contents, file.filename or "")}
+    except SoilReportError as exc:
+        return JSONResponse({"error": str(exc)}, status_code=422)
 
 @router.get("/seed_dashboard", response_class=HTMLResponse)
 async def seed_dashboard_get(request: Request, lang: str = "en"):
@@ -47,7 +73,6 @@ async def seed_dashboard_post(
     Temp: str = Form(...),
     Rainfall: str = Form(...),
     Humidity: str = Form(...),
-    Season_Duration: str = Form(...),
     Soil_Type: str = Form(...),
     Region: str = Form(...),
     lang: str = Form("en")
@@ -85,7 +110,7 @@ async def seed_dashboard_post(
             "Temp": float(Temp),
             "Rainfall": float(Rainfall),
             "Humidity": float(Humidity),
-            "Season_Duration": float(Season_Duration),
+            "Season_Duration": DEFAULT_SEASON_DURATION,
             "Soil Type": Soil_Type,
             "Region": Region
         }
@@ -101,7 +126,7 @@ async def seed_dashboard_post(
             temp=float(Temp),
             humidity=float(Humidity),
             rainfall=float(Rainfall),
-            duration=int(Season_Duration),
+            duration=DEFAULT_SEASON_DURATION,
             soil_type=Soil_Type,
             region=Region,
             pred_crop=pred_crop,

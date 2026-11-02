@@ -13,7 +13,7 @@ if BASE_DIR not in sys.path:
     sys.path.append(BASE_DIR)
 
 from models.database import authenticate_user, register_user
-from utils.config import COOKIE_SECRET
+from utils.config import COOKIE_SAMESITE, COOKIE_SECURE, COOKIE_SECRET
 
 # In-memory session database mapping: session_id (UUID) -> User Record Dict
 SESSIONS = {}
@@ -68,7 +68,8 @@ def login_farmer(response: Response, username, password, email=None):
             key="session_id",
             value=signed_session_id,
             httponly=True,
-            samesite="lax",
+            secure=COOKIE_SECURE,
+            samesite=COOKIE_SAMESITE,
             path="/"
         )
         return user

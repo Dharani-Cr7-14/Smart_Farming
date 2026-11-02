@@ -68,6 +68,38 @@
 .table-empty { display: grid; justify-items: center; gap: 10px; padding: 46px 20px; color: var(--color-text-secondary); text-align: center; font-size: 13px; }
 .table-empty i { color: rgba(255, 255, 255, 0.18); font-size: 28px; }
 
+.seed-dashboard-grid { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(340px, 0.92fr); align-items: start; gap: 24px; }
+.seed-dashboard-grid > div { min-width: 0; }
+.seed-form-card { padding: 26px; }
+.seed-form-header { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 22px; }
+.seed-form-header h3 { margin: 0 0 5px; font-size: 18px; }
+.seed-form-header p { margin: 0; color: var(--color-text-secondary); font-size: 12px; line-height: 1.45; }
+.seed-section-icon { display: grid; place-items: center; flex: 0 0 auto; width: 38px; height: 38px; border-radius: 11px; color: var(--accent-green); background: rgba(46, 204, 113, 0.13); }
+.soil-report-upload { margin: 0 -2px 22px; padding: 16px; border: 1px solid rgba(0, 242, 254, 0.16); border-radius: 14px; background: linear-gradient(135deg, rgba(0, 242, 254, 0.06), rgba(46, 204, 113, 0.04)); }
+.soil-report-upload .form-group { margin-bottom: 12px; }
+.soil-report-upload label { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; color: var(--color-text-primary); font-size: 12px; font-weight: 600; }
+.soil-report-upload label i { color: var(--accent-cyan); }
+.soil-report-upload input[type="file"] { width: 100%; padding: 9px; border: 1px dashed rgba(255, 255, 255, 0.16); border-radius: 9px; color: var(--color-text-secondary); background: rgba(5, 12, 15, 0.42); font-size: 11px; }
+.soil-report-upload .premium-btn { min-height: 34px; padding: 8px 13px; font-size: 11px; }
+.soil-report-upload .field-success, .soil-report-upload .field-error { margin: 10px 0 0; font-size: 11px; }
+.seed-form-card form { display: grid; gap: 0; }
+.seed-form-card .form-group { margin-bottom: 15px; }
+.seed-form-card .form-group label { margin-bottom: 7px; }
+.seed-nutrient-grid, .seed-select-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.seed-select-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.seed-outcome { min-width: 0; }
+.seed-result-card { position: sticky; top: 24px; padding: 26px; border-color: rgba(46, 204, 113, 0.3); background: linear-gradient(145deg, rgba(17, 42, 31, 0.9), rgba(16, 23, 25, 0.82)); }
+.crop-result-image { display: block; width: 100%; height: 172px; margin: -2px 0 24px; border-radius: 14px; object-fit: cover; border: 1px solid rgba(255, 255, 255, 0.1); }
+.seed-result-heading { display: flex; align-items: center; gap: 8px; margin: 0 0 22px; color: var(--accent-green); font-size: 15px; }
+.seed-result-heading i { font-size: 14px; }
+.seed-crop-name { padding: 17px 0 21px; border-bottom: 1px solid rgba(255, 255, 255, 0.09); font-size: 15px; color: var(--color-text-secondary); }
+.seed-crop-name b { display: block; margin-top: 5px; color: var(--color-text-primary); font-family: var(--font-display); font-size: 29px; text-transform: capitalize; }
+.seed-result-card h4 { margin: 22px 0 10px; color: var(--color-text-secondary); font-size: 12px; letter-spacing: 0.03em; }
+.seed-list { display: grid; gap: 8px; }
+.seed-list-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 13px; border: 1px solid rgba(255, 255, 255, 0.07); border-radius: 9px; background: rgba(5, 12, 15, 0.34); font-size: 12px; }
+.seed-list-row b:last-child { color: var(--accent-green); white-space: nowrap; font-size: 11px; }
+.seed-empty-state { min-height: 300px; display: grid; place-items: center; align-content: center; padding: 36px; text-align: center; }
+
 @keyframes react-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
 @media (max-width: 992px) {
@@ -78,6 +110,8 @@
   .sidebar-overlay { position: fixed; inset: 0; z-index: 90; background: rgba(0, 0, 0, 0.48); }
   .sidebar-overlay.visible { display: block; }
   .dashboard-stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .seed-dashboard-grid { grid-template-columns: 1fr; }
+  .seed-result-card { position: static; }
 }
 
 @media (max-width: 640px) {
@@ -85,6 +119,7 @@
   .hero-weather { display: none; }
   .hero-copy h2 { font-size: 29px; }
   .dashboard-stat-grid, .dashboard-action-grid { grid-template-columns: 1fr; }
+  .seed-nutrient-grid, .seed-select-grid { grid-template-columns: 1fr; }
   .dashboard-stat { min-height: 92px; }
   .activity-heading { align-items: flex-start; flex-direction: column; }
   .content-body { padding: 24px 18px; }

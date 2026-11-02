@@ -1,0 +1,16 @@
+.git
+.gitignore
+.env
+.DS_Store
+node_modules
+venv
+.venv
+disease_train_env
+dist
+data/raw
+data/plant_disease/train
+data/plant_disease/val
+src/app/static/uploads
+*.db
+*.pyc
+__pycache__

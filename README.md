@@ -1,210 +1,185 @@
-# Smart Farming Decision Support System 🌾
-### An AI-powered Smart Farming Decision Support System
+# Smart Farming Decision Support System
 
-An AI-powered **Smart Farming Decision Support System** that helps farmers make better cultivation decisions through crop recommendation, seed variety recommendation, plant disease detection, and an agricultural AI chatbot. By combining Machine Learning classification, Deep Learning vision models, and Large Language Model (LLM) conversational agents, the system provides crop recommendations, seed variety matches, plant pathogen diagnosis, and localized agricultural advisory.
+An AI-powered farming workspace for crop recommendations, seed variety matching, plant disease detection, and multilingual agricultural guidance.
 
----
+## Features
 
-## 🚀 Key Features
+- React dashboard with responsive navigation and activity history
+- Live temperature, humidity, and rainfall from the browser's current location
+- Soil-report PDF extraction for automatic crop and seed form prefilling
+- Real crop photos from the local PlantVillage dataset on prediction results
+- Registration and login with username, email, password, region, and signed session cookies
+- Crop recommendation from soil and weather inputs
+- Regional seed variety lookup based on the predicted crop
+- Plant disease detection from leaf images
+- Multilingual AI assistant for English, Tamil, and Hindi
+- SQLite history for crop predictions, disease scans, and chatbot messages
+- Model health endpoint at `/model_health`
 
-* **Farmer Registration & Secure Login**: Secure registration and session lifecycle authenticated via cryptographically signed session cookies.
-* **Crop Recommendation**: Machine learning soil suitability classification based on NPK and environmental factors.
-* **Seed Variety Recommendation**: Deterministic variety catalog queries matching target region, season, and crop type.
-* **Plant Disease Detection**: Deep Learning vision classification identifying 38 distinct crop leaf pathogens from uploaded leaf photographs.
-* **AI Agricultural Chatbot**: Interactive LLM advisor with multilingual system prompts (`en`/`ta`/`hi`) and session-isolated conversational memory.
-* **Crop/Disease/Chat History**: Persistent query records stored in SQLite, restricted strictly to the logged-in user.
-* **Plotly Visualizations**: Interactive Gauges, Radar plots, and Bar charts rendering crop features and pathogen diagnostic metrics.
-* **Responsive UI**: Sleek, glassmorphic design utilizing flexbox grids and mobile-toggle navigation panels.
-* **Model Health Monitoring**: Dynamic system check diagnosing classifier load states and Ollama daemon connectivity.
+## Technology
 
----
+- Frontend: React and Vite
+- Backend: FastAPI and Uvicorn
+- Models: scikit-learn, TensorFlow, Keras, and joblib
+- Chatbot: Ollama with Llama 3
+- Database: SQLite
+- Data processing: Pandas, NumPy, Pillow, and OpenCV
 
-## 🧠 AI & Architecture Details
+## Machine Learning Models
 
-### 1. Crop Recommendation Model
-* **Dataset**: `Crop_recommendation.csv` (2,200 records, 22 crop classes).
-* **Inputs (7 Features)**: Nitrogen (N), Phosphorus (P), Potassium (K), Temperature, Humidity, Soil pH, and Rainfall.
-* **Algorithm**: Random Forest Classifier.
-* **Accuracy**: **99.55%** on the held-out test split.
-* **Preprocessing**: Min-Max feature Scaling and label mapping.
+| Feature | Model or method | Stored or configured as |
+| --- | --- | --- |
+| Crop recommendation | Scikit-learn `RandomForestClassifier` with 100 trees and maximum depth 12 | `models/crop_recommender.joblib` |
+| Seed recommendation | Deterministic catalog lookup using the predicted crop and region | `data/processed/seed_catalog.csv` |
+| Plant disease detection | TensorFlow/Keras **ResNet50 transfer-learning CNN**, with the final 15 base-model layers fine-tuned; images use ResNet50 preprocessing and are resized to `224 x 224` | `models/plant_disease_model.h5` |
+| Agricultural chatbot | Ollama large language model | `OLLAMA_MODEL`, default `llama3:latest` |
 
-### 2. Seed Recommendation Catalog Lookup
-To ensure scientific validity, seed variety recommendation is implemented as a **deterministic catalog lookup** rather than an ML classifier.
-* **Rationale**: The seed variety dataset contains only 79 records representing many unique combinations. Training a machine learning classifier on 79 rows is mathematically invalid and leads to severe over-fitting and incorrect recommendations. 
-* **Implementation**: Uses a database catalog lookup mapping the ML-predicted crop, the farmer's region/zone, and the desired growth duration to recommend registered seed varieties (e.g., ADT-36, CO-4) sourced from agricultural department catalogs.
+The seed recommender is a catalog lookup, not a separately trained machine learning classifier. When `USE_MOCK_MODELS=True`, the application can load the mock joblib models in `models/` for development and testing.
 
-### 3. Plant Disease Detection (CNN)
-* **Dataset**: PlantVillage master dataset (54,305 leaf photos, 38 health/pathogen classes).
-* **Architecture**: ResNet50 Transfer Learning + Two-Stage Fine-Tuning (frozen base stage followed by unfreezing top 15 layers).
-* **Metrics**: **98.00%** Test Accuracy (Macro Precision: 0.98, Macro Recall: 0.98, Macro F1: 0.98).
-* **Preprocessing**: Resized to $224 \times 224$ RGB and processed using Keras's ImageNet channel-centering normalization (`resnet50.preprocess_input`).
+## Requirements
 
-### 4. Interactive AI Chatbot Advisor
-* **Engine**: Ollama running Llama 3 (`llama3:latest`).
-* **Multilingual Prompts**: Inject system-level instructions directing the response target language based on user selection (`en`, `ta`, `hi`), forcing Llama 3 to output replies strictly in English, Tamil, or Hindi.
-* **Context Memory**: Slices in-memory history to the most recent **6 conversation messages** per session to limit context window overhead and prevent latency bloat.
-* **Failure Tolerance**: Gracefully catches offline daemons and returns a diagnostic helper string to the user.
+- Python 3.10 or 3.11
+- Node.js and npm
+- Ollama, if chatbot features are required
 
----
+## Setup
 
-## 🛠️ Technology Stack
+Create the Python environment and install backend dependencies:
 
-* **Backend**: FastAPI (Python 3.10/3.11 asynchronous web server).
-* **Frontend**: HTML5, Vanilla CSS, JavaScript, Jinja2 Templates.
-* **Machine Learning**: scikit-learn, joblib.
-* **Deep Learning**: TensorFlow, Keras (configured for Apple Silicon M1/M2 GPU/Metal).
-* **Conversational AI**: Ollama, Llama 3.
-* **Database**: SQLite.
-* **Visualization**: Plotly.
-* **Data & Image Processing**: Pandas, NumPy, Pillow, OpenCV.
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
 
----
+Install and build the React frontend:
 
-## 📁 Project Structure
+```bash
+npm install
+npm run build
+```
+
+Create a `.env` file in the project root:
+
+```env
+OLLAMA_HOST=http://localhost:11434
+OLLAMA_MODEL=llama3:latest
+USE_MOCK_MODELS=False
+COOKIE_SECRET=replace-with-a-long-random-secret
+```
+
+The trained model files should be available in `models/`.
+
+## Run
+
+The recommended command builds the React frontend, starts Ollama when available, and launches FastAPI:
+
+```bash
+./start.sh
+```
+
+Or run the server directly after building the frontend:
+
+```bash
+disease_train_env/bin/python3.10 -m uvicorn src.app.main:app --host 127.0.0.1 --port 8000 --reload
+```
+
+Open http://127.0.0.1:8000 in a browser.
+
+To enable the chatbot, install Ollama and download the configured model:
+
+```bash
+ollama pull llama3
+```
+
+## Project Layout
 
 ```text
-smart_farming/
-├── data/                       # Soil datasets and Excel seed catalogs
-│   └── raw/
-│       ├── Crop_recommendation.csv
-│       └── Crop_varieties_clean.xlsx
-├── models/                     # Production model binaries
-│   ├── crop_recommender.joblib # Random Forest crop ML model
-│   └── plant_disease_model.h5  # Fine-tuned ResNet50 disease model
-├── src/
-│   ├── app/                    # FastAPI Web Application source
-│   │   ├── routes/             # Route routers (auth, chatbot, dashboards, history)
-│   │   ├── services/           # Business services (ML inference, Ollama chat, auth)
-│   │   ├── static/             # Stylesheets, JS handlers, and uploaded file space
-│   │   ├── templates/          # Jinja2 layout templates
-│   │   └── main.py             # Server entry point and health monitor
-│   ├── inference/              # Core prediction scripts
-│   ├── pipelines/              # Catalog loaders and parsing pipelines
-│   ├── training/               # Model training scripts
-│   └── utils/                  # System configs and translations
-├── tests/                      # Unit and regression test suites
-└── uzhavan_saathee.db          # Database file
+src/
+  frontend/       React application
+  app/
+    main.py       FastAPI entrypoint and React shell serving
+    routes/       Authentication, prediction, chatbot, history, and API routes
+    services/     Authentication, model inference, and chatbot services
+    models/       SQLite database helpers
+    static/       CSS, JavaScript, and uploaded images
+    templates/    Legacy server-rendered fallback templates
+  inference/      Prediction utilities
+  pipelines/      Dataset and catalog processing
+  training/       Model training scripts
+  utils/          Configuration and translations
+models/           Trained model files
+data/             Raw and processed datasets
 ```
 
----
+## Useful Routes
 
-## ⚙️ Installation & Setup
+| Route | Purpose |
+| --- | --- |
+| `/` | React dashboard |
+| `/seed_dashboard` | Crop and seed recommendation |
+| `/disease_dashboard` | Plant disease scan |
+| `/chatbot` | AI agricultural assistant |
+| `/history` | Saved prediction and chat history |
+| `/model_health` | Model and chatbot readiness status |
 
-### Prerequisites
-* **Python**: Python 3.10 or 3.11 (Required for compatibility with TensorFlow/Keras and Metal acceleration plugins).
-* **Ollama**: Local daemon installed and active.
+React data requests use `/api/session` and `/api/history`. Authentication and prediction form endpoints remain under `/auth`, `/seed_dashboard`, `/disease_dashboard`, and `/chatbot_message`.
+The dashboard requests browser geolocation and uses the coordinates with Open-Meteo's weather API through `/api/weather`. Location permission is optional; users can still enter weather values manually when unavailable. Rainfall is automatically calculated as the total precipitation for the last 30 completed/current days in millimeters.
+On the Crop & Seeds page, upload a text-based PDF soil report to extract pH, nitrogen, phosphorus, and potassium. Extracted values are shown in the form for review before submitting. Scanned-image PDFs are not supported yet.
+Prediction results use a matching real crop photo. The application first checks curated crop assets (including the bundled jute field photo), then searches for a healthy image in the local PlantVillage dataset. If the predicted crop is not represented by either source, the interface uses a neutral fallback illustration. The bundled jute photo is from [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Jute_Field_Bangladesh_(7749587518).jpg).
 
-### Steps
-1. **Set up virtual environment**:
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate
-   ```
-2. **Install required packages**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. **Configure Environment Variables**:
-   Create a `.env` file in the project root:
-   ```env
-   OLLAMA_HOST=http://localhost:11434
-   OLLAMA_MODEL=llama3:latest
-   USE_MOCK_MODELS=False
-   COOKIE_SECRET=<your-cryptographic-cookie-signing-secret>
-   ```
+## Optional Training Commands
 
----
+These commands are only needed when retraining models:
 
-## 🚀 Running the Services
-
-### A. Running the Web Application
-No model training is required to run the application. Pre-trained models must be located in `/models`.
-To run the server locally:
-```bash
-uvicorn src.app.main:app --reload --port 8000 --host 127.0.0.1
-```
-Open your browser and navigate to: `http://127.0.0.1:8000`
-
-### B. Training the Crop Recommendation Model
-If you need to retrain the crop model:
 ```bash
 python3 src/training/train_crop_model.py
-```
-
-### C. Training/Fine-Tuning the Disease Model
-If you need to retrain the disease model:
-```bash
 python3 src/training/train_disease_fine_tune.py
 ```
 
----
+## Testing
 
-## 🤖 Chatbot Setup
-1. Download and install [Ollama](https://ollama.com/).
-2. Launch the Ollama daemon.
-3. Download the model in your terminal:
-   ```bash
-   ollama pull llama3
-   ```
-4. Verify `OLLAMA_MODEL=llama3:latest` in your `.env`.
-5. Start the FastAPI server. Log in to the application and navigate to the **AI Chatbot** screen.
+Run the available test suite with:
 
----
-
-## 🗄️ Database Schema
-The SQLite database `uzhavan_saathee.db` contains four tables:
-* **`users`**: Stores profile information (username, salted SHA-256 password hash, region, target language).
-* **`crop_predictions`**: Logs NPK values, environmental inputs, recommended crop, and deterministic seed selections.
-* **`disease_predictions`**: Logs uploaded leaf photo names, pathogen predictions, and confidence levels.
-* **`chat_messages`**: Logs conversational questions and answers linked to user IDs.
-
-*All prediction and chat history queries filter records dynamically using the authenticated `user_id` parsed from the secure cookie session. Data leakage between users is impossible.*
-
----
-
-## 🔒 Security Hardening
-* **Password Encryption**: Salts and hashes passwords via SHA-256 before database insertion.
-* **Session Cookie Integrity**: Cryptographically signs the `session_id` cookie via HMAC-SHA256. Any client-side value modifications invalidate the session immediately.
-* **Cookie Attributes**: Cookies are marked `HttpOnly` and configured with `SameSite=Lax` to mitigate XSS and CSRF vectors.
-* **SQL Injection Prevention**: Parameterized queries are used for all database queries.
-* **Upload Validation**: Restricts uploads to `.jpg`, `.jpeg`, and `.png` file extensions, utilizing path basenames to eliminate directory traversal risks.
-
----
-
-## 🧪 Test Coverage & Verification
-The codebase is validated by the following test suites:
-* `test_production_disease.py`: Validates E2E leaf image upload and prediction against the promoted model.
-* `test_multiple_production_uploads.py`: Asserts multi-class predictions, format rejections, and empty payload failures.
-* `test_chatbot.py`: Verifies mock response routing, 6-turn history truncation, user memory isolation, and database logging.
-* `test_routes_regression.py`: Performs regression HTTP checks across all FastAPI paths.
-* `test_cookies_hardening.py`: Verifies registration, valid/invalid logins, cookie signature validation, and tampered cookie rejections.
-
-*Result*: **100% of test assertions passed successfully, confirming system integrity.**
-
----
-
-## ⚠️ Limitations & Disclaimers
-* **Dataset Constraints**: The disease vision model is trained and evaluated on the PlantVillage dataset. Real-world farm conditions (e.g. ambient lighting, diverse angles) may impact prediction accuracy.
-* **Chatbot Dependency**: Chatbot availability depends on a running local Ollama daemon and the pulled Llama 3 image.
-* **Seed Lookup**: Recommends seed varieties based on catalog lookup from state registries. It is not an ML prediction model.
-* **Disclaimer**: This system is a decision-support assistant. Its outputs should be verified against local agricultural experts and extension officers before purchasing inputs or executing crop management plans.
-
----
-
-## 📊 Final Project Architecture
-
-```text
-[ Farmer Client ]
-      │
-      ├── Authentication Check (HMAC-SHA256 Signed Session Cookie)
-      │
-      ├───► Smart Farming Dashboard (Interactive Summaries & Charts)
-      │
-      ├───► Crop/Seed Dashboard (Random Forest ML + Seed Catalog Lookup)
-      │
-      ├───► Leaf Disease Scan (ResNet50 Vision Pathogen Diagnosis)
-      │
-      └───► AI Chat Advisor (Ollama Llama 3 Multilingual Chatbot)
-            │
-            └───► SQLite History Logging (Isolated Database Records)
+```bash
+pytest -q
 ```
+
+The tests cover authentication cookies, route regressions, chatbot behavior, disease uploads, and production recommendation flows.
+
+## Docker and deployment
+
+The local two-container setup runs the React frontend at `http://localhost:8080`
+and FastAPI at `http://localhost:8000`:
+
+```bash
+cp .env.example .env
+# Set COOKIE_SECRET to a long random value in .env
+docker compose up --build
+```
+
+The backend container mounts `models/` and `data/plant_disease/` read-only so
+large model artifacts do not need to be committed to Git. Keep these artifacts
+in the private storage mechanism provided by the hosting platform (or attach a
+private volume) and set `USE_MOCK_MODELS=true` only for environments where
+production crop models are unavailable. The TensorFlow disease model is
+required for disease detection.
+
+For separate hosting, set `VITE_API_URL` to the public backend URL and set
+`FRONTEND_ORIGINS` on the backend to the exact public frontend origin. For
+cross-site cookies, use `COOKIE_SECURE=true` and `COOKIE_SAMESITE=none` over
+HTTPS. Never commit `.env`, database files, model files, datasets, or API
+credentials.
+
+The frontend can be deployed as a static Docker service from
+`Dockerfile.frontend`; deploy `Dockerfile.backend` as a Python web service
+listening on port `8000`. Suitable providers include Render, Railway, Fly.io,
+or a container platform with private persistent storage for the models and
+SQLite database. Ollama is optional and should be configured as a private
+reachable service; chatbot requests report unavailable when it is absent.
+
+## Notes
+
+- The chatbot requires a running Ollama service and a downloaded model.
+- Disease predictions are intended as decision support and should be confirmed by an agricultural expert.
+- Uploaded leaf images are stored under `src/app/static/uploads/`.

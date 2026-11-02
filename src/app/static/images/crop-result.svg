@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 300" role="img" aria-label="Healthy crop field illustration">
+  <defs>
+    <linearGradient id="sky" x1="0" x2="1" y1="0" y2="1">
+      <stop stop-color="#163f45"/>
+      <stop offset="1" stop-color="#102d2d"/>
+    </linearGradient>
+    <linearGradient id="field" x1="0" x2="0" y1="0" y2="1">
+      <stop stop-color="#2c9b61"/>
+      <stop offset="1" stop-color="#0f3d2c"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="300" rx="22" fill="url(#sky)"/>
+  <circle cx="510" cy="76" r="42" fill="#f1c40f" opacity=".9"/>
+  <path d="M0 190 Q150 120 320 184 T640 165 V300 H0Z" fill="#1d6847"/>
+  <path d="M0 220 Q170 155 340 222 T640 205 V300 H0Z" fill="url(#field)"/>
+  <g fill="none" stroke="#8de39b" stroke-linecap="round">
+    <path d="M95 275 Q105 208 113 166 M112 217 L84 191 M109 231 L140 199" stroke-width="7"/>
+    <path d="M210 290 Q220 218 229 179 M227 231 L197 205 M224 245 L258 211" stroke-width="7"/>
+    <path d="M355 285 Q364 211 375 157 M373 218 L340 187 M370 236 L412 195" stroke-width="8"/>
+    <path d="M500 292 Q510 222 518 181 M515 235 L485 210 M512 248 L548 216" stroke-width="7"/>
+  </g>
+  <path d="M0 156 Q84 112 164 150 T330 143 T490 137 T640 150" fill="none" stroke="#9be4ed" stroke-width="4" opacity=".45"/>
+</svg>
